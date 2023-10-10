@@ -1,28 +1,54 @@
 import { View, Text, Image, Pressable } from 'react-native';
 import { formatDate } from '../utils/utils';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+
 
 
 export default function PersonList({data, navigation}){
 
+  //right swipeable component (renders delete button)
+  const renderRightActions = (progress, dragX) => {
+    return (
+      <View 
+        style={{
+          display:"flex", 
+          justifyContent:"center", 
+          alignItems:"center", 
+          backgroundColor:"#eb7474",
+          height:100,
+          width:90
+        }}>
+        <Pressable 
+          onPress={() => console.log("pressed swipeable DEL btn")}>
+          <View style={{ textAlign: 'center'}}>
+            <MaterialIcons name="delete" size={35} color="#fff" />
+          </View>
+        </Pressable>
+      </View>
+    );
+  };
+
+
 return (
-  <View style={{flex:1, height:100, display:"flex", flexDirection:"row", gap:30, backgroundColor:"grey", marginBottom:15, alignItems:"center", justifyContent:"space-between"}}>
-    <View style={{backgroundColor:`${data.bgColor}`, borderRadius:50, width:70, height:70, display:"flex", justifyContent:"center", alignItems:"center"}}>
-      <Text>{data.initials}</Text>
+  <Swipeable renderRightActions={renderRightActions} rightOpenValue={-100}>
+    <View style={{flex:1, height:100, display:"flex", flexDirection:"row", gap:30, backgroundColor:"grey", marginBottom:15, alignItems:"center", justifyContent:"space-between"}}>
+      <View style={{backgroundColor:`${data.bgColor}`, borderRadius:50, width:70, height:70, display:"flex", justifyContent:"center", alignItems:"center"}}>
+        <Text>{data.initials}</Text>
+      </View>
+      <View style={{display:"flex"}}>
+        <Text>{data.name}</Text>
+        <Text>{formatDate(data.dob)}</Text>
+      </View>
+      <View>
+        <Pressable 
+          onPress={()=>navigation.navigate("IdeaScreen")}
+          style={{paddingRight:15}}  
+        >
+          <Ionicons name="ios-gift" size={30} color="#fff" />
+        </Pressable>
+      </View>
     </View>
-    <View style={{display:"flex"}}>
-      <Text>{data.name}</Text>
-      <Text>{formatDate(data.dob)}</Text>
-    </View>
-    <View>
-      <Pressable 
-        style={{backgroundColor:"red"}}
-        // onPress={()=>console.log("clicked")}  
-        onPress={()=>navigation.navigate("IdeaScreen")}  
-      >
-        <Ionicons name="ios-gift" size={24} color="black" />
-      </Pressable>
-    </View>
-  </View>
+  </Swipeable>
 )
 }
