@@ -16,6 +16,7 @@ function PeopleProvider(props){
         if (peopleList === null){ 
           return AsyncStorage.setItem(asKey, JSON.stringify([]));
         } else {
+          console.log("Loading people from AsyncStorage")
           setPeople(JSON.parse(peopleList));
         }
       })
@@ -33,7 +34,7 @@ function PeopleProvider(props){
     setPeople(updatedPeople)
     try{
       await AsyncStorage.setItem(asKey, JSON.stringify(updatedPeople))
-      console.log("AsyncStorage Updated.")
+      console.log("User saved. AsyncStorage Updated.")
     } catch (e){
       console.log (e)
     }
@@ -46,11 +47,13 @@ function PeopleProvider(props){
     setPeople(newList);
     try{
       await AsyncStorage.setItem(asKey, JSON.stringify(newList));
-      console.log("deleted person and updated in storage")
+      console.log("User deleted. AsyncStorage updated")
     } catch(e){
       console.log(e)
     }
   }
+
+  //TODO: personGiftList(id) retrieve a person's list of gifts for the idea screen
 
 
   return <PeopleContext.Provider value={[people, savePerson, removePerson]} {...props} />;

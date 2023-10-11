@@ -42,7 +42,12 @@ return (
       </View>
       <View>
         <Pressable 
-          onPress={()=>navigation.navigate("IdeaScreen")}
+          onPress={()=> {
+            navigation.navigate( "IdeaScreen", { 
+              person: data, 
+              personId: data.id 
+            });
+          }}
           style={{paddingRight:15}}  
         >
           <Ionicons name="ios-gift" size={30} color="#fff" />
