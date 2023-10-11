@@ -5,7 +5,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 
 
-export default function PersonList({data, navigation}){
+export default function PersonList({data, navigation, remove}){
 
   //right swipeable component (renders delete button)
   const renderRightActions = (progress, dragX) => {
@@ -20,7 +20,7 @@ export default function PersonList({data, navigation}){
           width:90
         }}>
         <Pressable 
-          onPress={() => console.log("pressed swipeable DEL btn")}>
+          onPress={() => remove(data)}>
           <View style={{ textAlign: 'center'}}>
             <MaterialIcons name="delete" size={35} color="#fff" />
           </View>

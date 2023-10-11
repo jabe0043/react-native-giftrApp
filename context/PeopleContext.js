@@ -11,29 +11,49 @@ function PeopleProvider(props){
   // load people data from async storage to state on initial app render
   useEffect(() => {
     AsyncStorage.getItem(asKey)
-      .then((list) => {
-        list = list === null ? [] : JSON.parse(list);
-        setPeople(list);
-        console.log("initial load context:", list)
+      .then((peopleList) =>{
+        // peopleList === null ? AsyncStorage.setItem(asKey, JSON.stringify([])) : setPeople(JSON.parse(peopleList));
+        if (peopleList === null){ 
+          return AsyncStorage.setItem(asKey, JSON.stringify([]));
+        } else {
+          setPeople(JSON.parse(peopleList));
+        }
+      })
+      .catch((e) =>{
+        console.warn(e.message)
       });
   }, []);
 
 
-  //SAVE a Person in context and update state
+  //SAVE a person in state and update async storage
   async function savePerson(person){
+    console.log("Save person called from context")
     person = Array.isArray(person) ? person : [person]
     let updatedPeople = [...person, ...people]
     setPeople(updatedPeople)
     try{
-      updatedPeople = JSON.stringify(updatedPeople);
-      await AsyncStorage.setItem(asKey, updatedPeople)
+      await AsyncStorage.setItem(asKey, JSON.stringify(updatedPeople))
+      console.log("AsyncStorage Updated.")
     } catch (e){
       console.log (e)
     }
   }
 
+  //DELETE a person from state and update async storage
+  async function removePerson(person){
+    console.log("Remove person called from context")
+    let newList = people.filter((item) => item.id !== person.id);
+    setPeople(newList);
+    try{
+      await AsyncStorage.setItem(asKey, JSON.stringify(newList));
+      console.log("deleted person and updated in storage")
+    } catch(e){
+      console.log(e)
+    }
+  }
 
-  return <PeopleContext.Provider value={[people, savePerson]} {...props} />;
+
+  return <PeopleContext.Provider value={[people, savePerson, removePerson]} {...props} />;
 }
 
 // HOOK

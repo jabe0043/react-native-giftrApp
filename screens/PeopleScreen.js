@@ -7,7 +7,7 @@ import PersonList from '../components/PersonList';
 
 export default function PeopleScreen({navigation, route}) {
   const insets = useSafeAreaInsets();
-  const [people] = usePeople();
+  const [people, savePerson, removePerson] = usePeople([]);
 
   console.log(people.length)
 
@@ -32,11 +32,10 @@ export default function PeopleScreen({navigation, route}) {
         <FlatList
           style={{display:"flex", flexDirection:"column"}}
           data = {people}
-          renderItem={({item}) => <PersonList data={item} navigation={navigation} /> }
+          renderItem={({item}) => <PersonList data={item} navigation={navigation} remove={removePerson} /> }
           keyExtractor={item => item.id}
         />
       </View>
-
     </SafeAreaView>
   );
 }
