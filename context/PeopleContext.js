@@ -58,6 +58,7 @@ function PeopleProvider(props){
   //GET a person's list of gifts (idea screen)
   function getGifts(id){
     let person = people.filter((person) => person.id === id)
+    // console.log(person);
     let giftList = person[0].ideas  //filter returns an array containing the person object. person[0].ideas is the array of gifts for that person.
     setGifts(giftList);
   }
@@ -66,19 +67,25 @@ function PeopleProvider(props){
     console.log("save gifts called from context. Person for which gifts are being saved:", personId)
     let matchingPerson = people.filter((person)=> person.id === personId);
     matchingPerson[0].ideas.push(gift);
-    await updatePerson(personId, matchingPerson);
+    try{
+      updatePerson(personId, matchingPerson);
+      // savePerson(matchingPerson)
+    } catch(e){
+      console.log(e)
+    }
   }
 
   async function updatePerson(personId, updatedPerson){
-    let newList = people.filter((person) => person.id !== personId);
-    newList.push(updatedPerson);
-    // setPeople(newList);
-    // try{
-    //   await AsyncStorage.setItem(asKey, JSON.stringify(newList))
-    //   console.log("User saved. AsyncStorage Updated.")
-    // } catch (e){
-    //   console.log (e)
-    // }
+    let filteredList = people.filter((person) => person.id !== personId);
+    let newList = [...updatedPerson, ...filteredList]
+    // filteredList.push(updatedPerson)
+    setPeople(newList);
+    try{
+      await AsyncStorage.setItem(asKey, JSON.stringify(newList))
+      console.log("Saved list with updated gift list. AsyncStorage Updated.")
+    } catch (e){
+      console.log (e)
+    }
   }
 
   return <PeopleContext.Provider value={[people, savePerson, removePerson, getGifts, gifts, saveGifts]} {...props} />;

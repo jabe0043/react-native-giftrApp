@@ -22,7 +22,7 @@ export default function AddIdeaScreen({route, navigation}) {
   const [type, setType] = useState(CameraType.back);
   const [status, requestPermission] = Camera.useCameraPermissions();
   const [img, setImg] = useState(null)
-  const { personId } = route.params   //accessing the personId route param passed by the FAB
+  const { personId, person } = route.params   //accessing the personId route param passed by the FAB.
   const [people, savePerson, removePerson, getGifts, gifts, saveGifts] = usePeople(); //using context
 
 
@@ -37,7 +37,7 @@ export default function AddIdeaScreen({route, navigation}) {
 
   function takePhoto(){
     if(!hasPermission){
-      console.log("No soup for you.");
+      console.log("No Camera Access Permission Given.");
       return;
     }
     const opts ={
@@ -48,9 +48,9 @@ export default function AddIdeaScreen({route, navigation}) {
     }
     camera.takePictureAsync()
     .then(pic =>{
-      console.log(pic.uri)
-      console.log(pic.width)
-      console.log(pic.height)
+      // console.log(pic.uri)
+      // console.log(pic.width)
+      // console.log(pic.height)
       let w = screenWidth * 0.8;
       let h = (w/pic.width) * pic.height
       setImg({uri: pic.uri, width: w, height: h})
@@ -60,7 +60,6 @@ export default function AddIdeaScreen({route, navigation}) {
 
   //create the gift model and save it through context
   function createAndSaveGift(personId){
-    console.log(personId);
     const giftModel = {
       giftId: Crypto.randomUUID(),
       giftName: giftName,
@@ -70,6 +69,10 @@ export default function AddIdeaScreen({route, navigation}) {
     }
     // console.log("Gift model:", giftModel)
     saveGifts(personId, giftModel)
+    .then(()=>navigation.navigate("IdeaScreen", {
+      person: person, 
+      personId: personId 
+    }))
   }
 
 

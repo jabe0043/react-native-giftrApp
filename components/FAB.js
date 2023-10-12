@@ -1,10 +1,11 @@
 import { Pressable, Text, StyleSheet } from "react-native";
 
-export default function FAB ({data, navigation, personId}){
+export default function FAB ({person, navigation, personId}){
   return (
       <Pressable style={styles.container}
           onPress={()=>{
-            // console.log(personId)
+            // console.log("FAB", personId)
+            // console.log("FAB",person)
             navigation.navigate("AddIdeaScreen", {
               personId: personId
             })
@@ -13,13 +14,6 @@ export default function FAB ({data, navigation, personId}){
       </Pressable>
   );
 };
-// onPress={()=> {
-//   // getGifts(data.id)
-//   navigation.navigate( "IdeaScreen", { 
-//     person: data, 
-//     personId: data.id 
-//   });
-// }}
 
 const styles = StyleSheet.create({
   container: {

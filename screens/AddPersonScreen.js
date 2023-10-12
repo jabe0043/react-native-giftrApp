@@ -19,33 +19,32 @@ export default function AddPersonScreen({navigation, route}) {
   const [lastName, setLastName] = useState("");
   const [people, savePerson] = usePeople() //importing the savePerson function from context provider. 
 
-
-
-  function createPerson(fn, ln, dob){
-    let bgColor = avatarBg();
-    if(fn === "" || ln === "" || dob === "" ){
-      console.warn("MISSING DATA")
-    } else {
-      const personModel = {
-        id: Crypto.randomUUID(),
-        initials: `${fn.slice(0, 1)} ${ln.slice(0,1)}`,
-        // bgColor: avatarBg(),
-        bgColor: bgColor,
-        name: `${fn} ${ln}`,
-        dob: dob,
-        ideas:[]
-      }
-      savePerson(personModel)   //saving through context.
-      .then(navigation.navigate("PeopleScreen"))
-    }
-  }
-
+  let bgColor = avatarBg();
 
   function avatarBg(){
     const colorArr = ["#fac273", "#83a3d3", "#eb7474", "#5dbaab","#625583" ]
     const bgColor = Math.floor(Math.random() * (colorArr.length + 1))
     return colorArr[bgColor]
   }
+
+  function createPerson(fn, ln, dob){
+    if(fn === "" || ln === "" || dob === "" ){
+      console.warn("MISSING DATA")
+    } else {
+      console.log(bgColor)
+      const personModel = {
+        id: Crypto.randomUUID(),
+        initials: `${fn.slice(0, 1)} ${ln.slice(0,1)}`,
+        bgColor: avatarBg(),
+        name: `${fn} ${ln}`,
+        dob: dob,
+        ideas:[]
+      }
+      savePerson(personModel)   //saving through context.
+      .then(() => navigation.navigate("PeopleScreen"))
+    }
+  }
+
 
   return (
   <View style={{ flex: 1, alignItems: 'center', backgroundColor:"#625583" }}>

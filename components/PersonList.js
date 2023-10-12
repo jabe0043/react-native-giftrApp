@@ -5,7 +5,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 
 
-export default function PersonList({data, navigation, remove, getGifts}){
+export default function PersonList({data, navigation, remove}){
 
   //right swipeable component (renders delete button)
   const renderRightActions = (progress, dragX) => {
@@ -32,7 +32,7 @@ export default function PersonList({data, navigation, remove, getGifts}){
 
 return (
   <Swipeable renderRightActions={renderRightActions} rightOpenValue={-100}>
-    <View style={{flex:1, height:100, display:"flex", flexDirection:"row", gap:30, backgroundColor:"grey", marginBottom:15, alignItems:"center", justifyContent:"space-between"}}>
+    <View style={{flex:1, height:100, display:"flex", flexDirection:"row", backgroundColor:"grey", marginBottom:15, alignItems:"center", justifyContent:"space-between"}}>
       <View style={{backgroundColor:`${data.bgColor}`, borderRadius:50, width:70, height:70, display:"flex", justifyContent:"center", alignItems:"center"}}>
         <Text>{data.initials}</Text>
       </View>
@@ -43,7 +43,6 @@ return (
       <View>
         <Pressable 
           onPress={()=> {
-            // getGifts(data.id)
             navigation.navigate( "IdeaScreen", { 
               person: data, 
               personId: data.id 
