@@ -5,7 +5,7 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 
 
-export default function PersonList({data, navigation, remove}){
+export default function PersonList({data, navigation, remove, getGifts}){
 
   //right swipeable component (renders delete button)
   const renderRightActions = (progress, dragX) => {
@@ -43,6 +43,7 @@ return (
       <View>
         <Pressable 
           onPress={()=> {
+            getGifts(data.id)
             navigation.navigate( "IdeaScreen", { 
               person: data, 
               personId: data.id 

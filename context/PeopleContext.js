@@ -7,6 +7,7 @@ const PeopleContext = createContext();
 function PeopleProvider(props){
   const asKey = "people_askey_jabe0043"            
   const [people, setPeople] = useState([]);
+  const [gifts, setGifts] = useState([]);
 
   // load people data from async storage to state on initial app render
   useEffect(() => {
@@ -53,10 +54,18 @@ function PeopleProvider(props){
     }
   }
 
-  //TODO: personGiftList(id) retrieve a person's list of gifts for the idea screen
+  //GET a person's list of gifts (idea screen)
+  function getGifts(id){
+    console.log(id)
+    console.log("GIFTS state:", gifts)
+    let person = people.filter((person) => person.id === id)
+    let giftList = person[0].ideas  //filter returns an array containing the person object
+    setGifts(giftList);
+    // console.log("GIFTS state:", gifts)
+    console.log("GIFTLIST:", giftList);
+  }
 
-
-  return <PeopleContext.Provider value={[people, savePerson, removePerson]} {...props} />;
+  return <PeopleContext.Provider value={[people, savePerson, removePerson, getGifts]} {...props} />;
 }
 
 // HOOK

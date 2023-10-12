@@ -7,9 +7,8 @@ import PersonList from '../components/PersonList';
 
 export default function PeopleScreen({navigation, route}) {
   const insets = useSafeAreaInsets();
-  const [people, savePerson, removePerson] = usePeople([]);
+  const [people, savePerson, removePerson, getGifts] = usePeople([]);
 
-  console.log(people.length)
 
 
 
@@ -32,7 +31,7 @@ export default function PeopleScreen({navigation, route}) {
         <FlatList
           style={{display:"flex", flexDirection:"column"}}
           data = {people}
-          renderItem={({item}) => <PersonList data={item} navigation={navigation} remove={removePerson} /> }
+          renderItem={({item}) => <PersonList data={item} navigation={navigation} remove={removePerson} getGifts={getGifts} /> }
           keyExtractor={item => item.id}
         />
       </View>

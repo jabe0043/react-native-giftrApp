@@ -49,7 +49,15 @@ export default function App() {
                 <Stack.Screen 
                   name="IdeaScreen" 
                   component={IdeaScreen} 
-                  options={{title:"Gifts"}}
+                  options={({ navigation }) => ({
+                    title:"Gifts",
+                    headerRight: () => (
+                      <Button
+                        onPress={() => navigation.navigate('AddIdeaScreen')}
+                        title="Add Gifts"
+                      />
+                    )
+                })}
                 />
                 <Stack.Screen 
                   name="AddIdeaScreen" 

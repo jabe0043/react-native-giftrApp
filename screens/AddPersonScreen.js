@@ -20,14 +20,17 @@ export default function AddPersonScreen({navigation, route}) {
   const [people, savePerson] = usePeople() //importing the savePerson function from context provider. 
 
 
+
   function createPerson(fn, ln, dob){
+    let bgColor = avatarBg();
     if(fn === "" || ln === "" || dob === "" ){
       console.warn("MISSING DATA")
     } else {
       const personModel = {
         id: Crypto.randomUUID(),
         initials: `${fn.slice(0, 1)} ${ln.slice(0,1)}`,
-        bgColor: avatarBg(),
+        // bgColor: avatarBg(),
+        bgColor: bgColor,
         name: `${fn} ${ln}`,
         dob: dob,
         ideas:[]
@@ -66,10 +69,11 @@ export default function AddPersonScreen({navigation, route}) {
         flex:1
       }}
     /> 
-    {/**TODO: CHECK KEYBOARDAVOIDINGVIEW  */}
-  <KeyboardAvoidingView> 
-    <View>
-      <View style={{paddingTop:25}}>
+    {/* *TODO: CHECK KEYBOARDAVOIDINGVIEW  */}
+
+  <View style={{paddingTop:25}}>    
+    <KeyboardAvoidingView> 
+      {/* <View style={{paddingTop:25}}> */}
         <Text style={{color:"#fff"}}>First Name</Text>
         <TextInput
           style={styles.input}
@@ -77,9 +81,12 @@ export default function AddPersonScreen({navigation, route}) {
           value={firstName}
           // placeholder="First Name"
         />
-      </View>
+      {/* </View> */}
+    </KeyboardAvoidingView>
+  </View>
 
       <View>
+      <KeyboardAvoidingView> 
         <Text style={{color:"#fff"}}>Last Name</Text>
         <TextInput
           style={styles.input}
@@ -87,27 +94,30 @@ export default function AddPersonScreen({navigation, route}) {
           value={lastName}
           // placeholder="Last Name"
         />
+            </KeyboardAvoidingView>
       </View>
 
       <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around", paddingTop:15}}>
+      <KeyboardAvoidingView> 
         <Pressable 
           style={{height:40, width:80, backgroundColor:"#eb7474", display:"flex", justifyContent:"center", alignItems:"center", borderRadius:20}}
           onPress={()=> navigation.navigate("PeopleScreen")}
           >
           <Text> Cancel </Text>
         </Pressable>
+        </KeyboardAvoidingView>
 
+        <KeyboardAvoidingView> 
         <Pressable 
           style={{height:40, width:80, backgroundColor:"#5dbaab", display:"flex", justifyContent:"center", alignItems:"center", borderRadius:20}}
           onPress={()=> createPerson(firstName, lastName, dob)}
           >
           <Text> Save </Text>
         </Pressable>
+        </KeyboardAvoidingView>
       </View>
-      
+
     </View>
-    </KeyboardAvoidingView>
-  </View>
   );
 }
 
