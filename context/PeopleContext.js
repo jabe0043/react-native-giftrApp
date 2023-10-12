@@ -61,7 +61,6 @@ function PeopleProvider(props){
     let person = people.filter((person) => person.id === id)
     let giftList = person[0].ideas  //filter returns an array containing the person object
     setGifts(giftList);
-    // console.log("GIFTS state:", gifts)
     console.log("GIFTLIST:", giftList);
   }
 
