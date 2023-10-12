@@ -2,7 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import {useWindowDimensions, View, ScrollView, Pressable, Image, KeyboardAvoidingView, TextInput, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Camera, CameraType } from 'expo-camera';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons'; 
+import { usePeople } from '../context/PeopleContext';
+import * as Crypto from 'expo-crypto';
+
 
 
 
@@ -11,9 +14,6 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 export default function AddIdeaScreen({route, navigation}) {
   const insets = useSafeAreaInsets();
   const [giftName, setGiftName] = useState("");
-  console.log(giftName);
-
-
   const screen = useWindowDimensions();
   const screenWidth = screen.width;
   const screenHeight = screen.height;
@@ -22,6 +22,8 @@ export default function AddIdeaScreen({route, navigation}) {
   const [type, setType] = useState(CameraType.back);
   const [status, requestPermission] = Camera.useCameraPermissions();
   const [img, setImg] = useState(null)
+  const { personId } = route.params   //accessing the personId route param passed by the FAB
+  const [people, savePerson, removePerson, getGifts, gifts, saveGifts] = usePeople(); //using context
 
 
   useEffect(()=>{
@@ -32,7 +34,6 @@ export default function AddIdeaScreen({route, navigation}) {
     })
     .catch()//TODO:
   }, []) 
-
 
   function takePhoto(){
     if(!hasPermission){
@@ -54,9 +55,23 @@ export default function AddIdeaScreen({route, navigation}) {
       let h = (w/pic.width) * pic.height
       setImg({uri: pic.uri, width: w, height: h})
     })
-    // .then(console.log("picture taken"))
     .catch(err => console.log(err.message));
   }
+
+  //create the gift model and save it through context
+  function createAndSaveGift(personId){
+    console.log(personId);
+    const giftModel = {
+      giftId: Crypto.randomUUID(),
+      giftName: giftName,
+      img: img.uri,
+      width: img.width,
+      height: img.height
+    }
+    // console.log("Gift model:", giftModel)
+    saveGifts(personId, giftModel)
+  }
+
 
   return (
       <View style={[styles.container, {paddingVertical: img ? 40 : 0}]}>
@@ -78,7 +93,15 @@ export default function AddIdeaScreen({route, navigation}) {
           <View style={{alignSelf:"center"}}>
             <Image source={{uri: img.uri}} style= {{ width: img.width, height: img.height}}/>
             <View >
-              <Text>HI</Text>
+              <KeyboardAvoidingView> 
+                <Text>Gift Name</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={setGiftName}
+                  value={giftName}
+                  // placeholder="Last Name"
+                />
+              </KeyboardAvoidingView>
               <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around", paddingTop:15}}>
                 <Pressable 
                     style={{height:40, width:80, backgroundColor:"#eb7474", display:"flex", justifyContent:"center", alignItems:"center", borderRadius:20}}
@@ -88,7 +111,7 @@ export default function AddIdeaScreen({route, navigation}) {
                 </Pressable>
                 <Pressable 
                   style={{height:40, width:80, backgroundColor:"#5dbaab", display:"flex", justifyContent:"center", alignItems:"center", borderRadius:20}}
-                  onPress={()=> console.log("save the picture and go back to idea screen")}
+                  onPress={()=> createAndSaveGift(personId)}
                   >
                     <Text>Save</Text>
                 </Pressable>

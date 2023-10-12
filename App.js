@@ -51,12 +51,12 @@ export default function App() {
                   component={IdeaScreen} 
                   options={({ navigation }) => ({
                     title:"Gifts",
-                    headerRight: () => (
-                      <Button
-                        onPress={() => navigation.navigate('AddIdeaScreen')}
-                        title="Add Gifts"
-                      />
-                    )
+                    // headerRight: () => (
+                    //   <Button
+                    //     onPress={() => navigation.navigate('AddIdeaScreen')}
+                    //     title="Add Gifts"
+                    //   />
+                    // )
                 })}
                 />
                 <Stack.Screen 

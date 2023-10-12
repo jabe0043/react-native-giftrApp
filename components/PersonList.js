@@ -43,7 +43,7 @@ return (
       <View>
         <Pressable 
           onPress={()=> {
-            getGifts(data.id)
+            // getGifts(data.id)
             navigation.navigate( "IdeaScreen", { 
               person: data, 
               personId: data.id 

@@ -24,17 +24,18 @@ function PeopleProvider(props){
       .catch((e) =>{
         console.warn(e.message)
       });
+      // AsyncStorage.clear();
   }, []);
 
 
-  //SAVE a person in state and update async storage
+  //SAVE a person in state and update async storage       //TODO: MIX with the UpdatePerson function so it can do either or.
   async function savePerson(person){
     console.log("Save person called from context")
     person = Array.isArray(person) ? person : [person]
-    let updatedPeople = [...person, ...people]
-    setPeople(updatedPeople)
+    let newPeopleList = [...person, ...people]
+    setPeople(newPeopleList)
     try{
-      await AsyncStorage.setItem(asKey, JSON.stringify(updatedPeople))
+      await AsyncStorage.setItem(asKey, JSON.stringify(newPeopleList))
       console.log("User saved. AsyncStorage Updated.")
     } catch (e){
       console.log (e)
@@ -56,15 +57,31 @@ function PeopleProvider(props){
 
   //GET a person's list of gifts (idea screen)
   function getGifts(id){
-    console.log(id)
-    console.log("GIFTS state:", gifts)
     let person = people.filter((person) => person.id === id)
-    let giftList = person[0].ideas  //filter returns an array containing the person object
+    let giftList = person[0].ideas  //filter returns an array containing the person object. person[0].ideas is the array of gifts for that person.
     setGifts(giftList);
-    console.log("GIFTLIST:", giftList);
   }
 
-  return <PeopleContext.Provider value={[people, savePerson, removePerson, getGifts]} {...props} />;
+  async function saveGifts(personId, gift){
+    console.log("save gifts called from context. Person for which gifts are being saved:", personId)
+    let matchingPerson = people.filter((person)=> person.id === personId);
+    matchingPerson[0].ideas.push(gift);
+    await updatePerson(personId, matchingPerson);
+  }
+
+  async function updatePerson(personId, updatedPerson){
+    let newList = people.filter((person) => person.id !== personId);
+    newList.push(updatedPerson);
+    // setPeople(newList);
+    // try{
+    //   await AsyncStorage.setItem(asKey, JSON.stringify(newList))
+    //   console.log("User saved. AsyncStorage Updated.")
+    // } catch (e){
+    //   console.log (e)
+    // }
+  }
+
+  return <PeopleContext.Provider value={[people, savePerson, removePerson, getGifts, gifts, saveGifts]} {...props} />;
 }
 
 // HOOK
