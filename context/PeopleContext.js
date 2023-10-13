@@ -3,13 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const PeopleContext = createContext();
 
-// PROVIDER
+// CONTEXT PROVIDER
 function PeopleProvider(props){
   const asKey = "people_askey_jabe0043"            
-  const [people, setPeople] = useState([]);
-  const [gifts, setGifts] = useState([]);
+  const [people, setPeople] = useState([]); 
+  const [gifts, setGifts] = useState([]);   
 
-  // load people data from async storage to state on initial app render
+  // Get the list of people from async storage on initial app load. If the list != empty, update people state with the retrieved list. 
   useEffect(() => {
     AsyncStorage.getItem(asKey)
       .then((peopleList) =>{
@@ -32,6 +32,7 @@ function PeopleProvider(props){
   async function savePerson(person){
     console.log("Save person called from context")
     person = Array.isArray(person) ? person : [person]
+    console.log("SAVING...", person)
     let newPeopleList = [...person, ...people]
     setPeople(newPeopleList)
     try{
@@ -55,31 +56,29 @@ function PeopleProvider(props){
     }
   }
 
-  //GET a person's list of gifts (idea screen)
+  //GET a person's list of gifts from their id.
   function getGifts(id){
     let person = people.filter((person) => person.id === id)
-    // console.log(person);
-    let giftList = person[0].ideas  //filter returns an array containing the person object. person[0].ideas is the array of gifts for that person.
+    let giftList = person[0].ideas 
     setGifts(giftList);
   }
 
+  //SAVE a person's gift.
   async function saveGifts(personId, gift){
     console.log("save gifts called from context. Person for which gifts are being saved:", personId)
     let matchingPerson = people.filter((person)=> person.id === personId);
     matchingPerson[0].ideas.push(gift);
     try{
       updatePerson(personId, matchingPerson);
-      // savePerson(matchingPerson)
     } catch(e){
       console.log(e)
     }
   }
 
-  //save pre-existing person with new gifts or deleted gifts. Add it to SaveGifts function
+  //Update and save pre-existing person with new gifts or deleted gifts. Add it to SaveGifts function
   async function updatePerson(personId, updatedPerson){
     let filteredList = people.filter((person) => person.id !== personId);
     let newList = [...updatedPerson, ...filteredList]
-    // filteredList.push(updatedPerson)
     setPeople(newList);
     try{
       await AsyncStorage.setItem(asKey, JSON.stringify(newList))
@@ -104,7 +103,7 @@ function PeopleProvider(props){
   return <PeopleContext.Provider value={[people, savePerson, removePerson, getGifts, gifts, saveGifts, removeGift]} {...props} />;
 }
 
-// HOOK
+// HOOK to access the people context globally
 function usePeople() {
   const context = useContext(PeopleContext);
   if (!context) throw new Error("You can only access the People Context from components within the provider.");

@@ -1,15 +1,16 @@
-import { View, Text, TextInput, StyleSheet, Pressable, KeyboardAvoidingView } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Pressable, KeyboardAvoidingView, SafeAreaView, Modal, } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState, useEffect } from 'react';
 import DatePicker from 'react-native-modern-datepicker';
 import { usePeople } from '../context/PeopleContext';
 import * as Crypto from 'expo-crypto';
-
+import ScreenHeaders from '../components/ScreenHeaders';
+import { AntDesign } from '@expo/vector-icons';
 
 /*TODO:
 validation modal window
 add trim(), capitalize names + cleaning/formatting fn, ln and dob.
-add avatar to person model
+KEYBOARDAVOIDINGVIEW 
 */
 
 export default function AddPersonScreen({navigation, route}) {
@@ -18,14 +19,15 @@ export default function AddPersonScreen({navigation, route}) {
   const [firstName, setFirstName] = useState("")
   const [lastName, setLastName] = useState("");
   const [people, savePerson] = usePeople() //importing the savePerson function from context provider. 
-
-  let bgColor = avatarBg();
+  const [visibleDateModal, setVisibleDateModal] = useState(false);
 
   function avatarBg(){
     const colorArr = ["#fac273", "#83a3d3", "#eb7474", "#5dbaab","#625583" ]
     const bgColor = Math.floor(Math.random() * (colorArr.length + 1))
     return colorArr[bgColor]
   }
+
+  let bgColor = avatarBg();
 
   function createPerson(fn, ln, dob){
     if(fn === "" || ln === "" || dob === "" ){
@@ -37,7 +39,7 @@ export default function AddPersonScreen({navigation, route}) {
         initials: `${fn.slice(0, 1)} ${ln.slice(0,1)}`,
         bgColor: avatarBg(),
         name: `${fn} ${ln}`,
-        dob: dob,
+        dob: dob,    
         ideas:[]
       }
       savePerson(personModel)   //saving through context.
@@ -47,56 +49,83 @@ export default function AddPersonScreen({navigation, route}) {
 
 
   return (
-  <View style={{ flex: 1, alignItems: 'center', backgroundColor:"#625583" }}>
+    <SafeAreaView style={{ flex: 1 }}>
     
-    <View style={{backgroundColor:"#625583", width:"100%", height:75, display:"flex", justifyContent:"center", padding:20}}>
-      <Text style={{color:"#fff"}}>Header Comp</Text>
+    <ScreenHeaders 
+      screenName={"AddPersonScreen"}>
+    </ScreenHeaders>
+
+    <View style={{padding:20}}>    
+      <KeyboardAvoidingView> 
+          <Text>First Name</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setFirstName}
+            value={firstName}
+          />
+      </KeyboardAvoidingView>
     </View>
 
-    <DatePicker 
-      onSelectedChange={date => setDob(date)}
-      mode="calendar"
-      style={{ borderBottomLeftRadius: 25, borderBottomRightRadius:25}}
-      options={{
-        backgroundColor: '#83a3d3',
-        textHeaderColor: '#fff',
-        textDefaultColor: '#fff',
-        selectedTextColor: '#fff',
-        mainColor: '#625583',
-        textSecondaryColor: '#fff',
-        borderColor: 'rgba(122, 146, 165, 0.1)',
-        flex:1
-      }}
-    /> 
-    {/* *TODO: CHECK KEYBOARDAVOIDINGVIEW  */}
-
-  <View style={{paddingTop:25}}>    
-    <KeyboardAvoidingView> 
-      {/* <View style={{paddingTop:25}}> */}
-        <Text style={{color:"#fff"}}>First Name</Text>
-        <TextInput
-          style={styles.input}
-          onChangeText={setFirstName}
-          value={firstName}
-          // placeholder="First Name"
-        />
-      {/* </View> */}
-    </KeyboardAvoidingView>
-  </View>
-
-      <View>
+    <View style={{padding:20}}>
       <KeyboardAvoidingView> 
-        <Text style={{color:"#fff"}}>Last Name</Text>
+        <Text>Last Name</Text>
         <TextInput
           style={styles.input}
           onChangeText={setLastName}
           value={lastName}
-          // placeholder="Last Name"
         />
-            </KeyboardAvoidingView>
-      </View>
+      </KeyboardAvoidingView>
+    </View>
 
-      <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around", paddingTop:15}}>
+    <View style={{padding:20}}>
+      <KeyboardAvoidingView> 
+        <Text>Date of Birth</Text>
+        <View style={{display:"flex", flexDirection:"row"}}>
+          <Text style={styles.dobInput}> {dob} </Text>
+          <Pressable 
+            style={{paddingLeft:12.5, display:"flex", justifyContent:"center"}}
+            onPress={() => setVisibleDateModal(true)}
+          >
+            <AntDesign name="calendar" size={24} color="black" />
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
+
+    <View style={styles.centeredView}>
+      <Modal
+        animationType="slide-down"
+        transparent={true}
+        visible={visibleDateModal}
+        >
+        <View style={styles.centeredView}>
+          <DatePicker 
+            onSelectedChange={date => setDob(date.replaceAll("/", "-"))}
+            style={{borderTopLeftRadius:20, borderTopRightRadius:20}}
+            mode="calendar"
+            current={'2000-01-01'}
+            options={{
+              backgroundColor: '#fff',
+              textHeaderColor: '#000',
+              textDefaultColor: '#000',
+              selectedTextColor: '#fff',
+              mainColor: '#5dbaab',
+              textSecondaryColor: '#000',
+              borderColor: '#fff',
+            }}
+          /> 
+          <View style={{display:"flex", flexDirection:"row", justifyContent:"flex-end", alignItems:'center', marginTop:-50 ,backgroundColor:"#fff", width:"100%", paddingHorizontal:20, paddingBottom:15, borderBottomRightRadius:20, borderBottomLeftRadius:20}}>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setVisibleDateModal(!visibleDateModal)}>
+              <Text style={styles.textStyle}>Return</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    </View>
+
+      <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around"}}>
       <KeyboardAvoidingView> 
         <Pressable 
           style={{height:40, width:80, backgroundColor:"#eb7474", display:"flex", justifyContent:"center", alignItems:"center", borderRadius:20}}
@@ -116,18 +145,47 @@ export default function AddPersonScreen({navigation, route}) {
         </KeyboardAvoidingView>
       </View>
 
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   input: {
-    height: 40,
+    height: 45,
     width: 300,
-    margin: 12,
     borderWidth: 1,
-    padding: 10,
-    borderRadius:25,
-    backgroundColor:"#fff"
+    borderRadius:5,
+    backgroundColor:"#fff",
+  },
+
+  dobInput:{
+    height: 45,
+    width: 250,
+    borderWidth: 1,
+    borderRadius:5,
+    backgroundColor:"#fff",
+  },
+
+  //MODAL
+  centeredView: {
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 110
+  },
+
+  button: {
+    borderRadius: 20,
+    padding: 15,
+    // elevation: 2,
+  },
+  buttonClose: {
+    backgroundColor:'#5dbaab',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+    // backgroundColor:"red"
   },
 });

@@ -1,13 +1,25 @@
 import { View, Text, Image, Pressable } from 'react-native';
-import { formatDate } from '../utils/utils';
+// import { correctDateStrOffset } from '../utils/utils';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 
 
-export default function PersonList({data, navigation, remove}){
+export default function PersonList({data, navigation, remove, DateOffset}){
 
-  //right swipeable component (renders delete button)
+
+  function formatDate(date){
+    let options = {
+      month: 'long',
+      day: 'numeric',
+    };
+    let dateString = new Intl.DateTimeFormat('en-CA', options).format(DateOffset(date));
+    return dateString
+  }
+
+
+
+  //right-side swipeable component (renders delete button)
   const renderRightActions = (progress, dragX) => {
     return (
       <View 
@@ -39,6 +51,7 @@ return (
       <View style={{display:"flex"}}>
         <Text>{data.name}</Text>
         <Text>{formatDate(data.dob)}</Text>
+        {/* <Text>{data.dob}</Text> */}
       </View>
       <View>
         <Pressable 

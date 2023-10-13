@@ -3,7 +3,7 @@ import { StyleSheet, Button } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import PeopleScreen from './screens/PeopleScreen'
 import AddPersonScreen from './screens/AddPersonScreen'
 import IdeaScreen from './screens/IdeaScreen'
