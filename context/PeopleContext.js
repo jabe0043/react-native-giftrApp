@@ -75,6 +75,7 @@ function PeopleProvider(props){
     }
   }
 
+  //save pre-existing person with new gifts or deleted gifts. Add it to SaveGifts function
   async function updatePerson(personId, updatedPerson){
     let filteredList = people.filter((person) => person.id !== personId);
     let newList = [...updatedPerson, ...filteredList]
@@ -84,11 +85,23 @@ function PeopleProvider(props){
       await AsyncStorage.setItem(asKey, JSON.stringify(newList))
       console.log("Saved list with updated gift list. AsyncStorage Updated.")
     } catch (e){
-      console.log (e)
+      console.log(e)
     }
   }
 
-  return <PeopleContext.Provider value={[people, savePerson, removePerson, getGifts, gifts, saveGifts]} {...props} />;
+  //Delete gift for person
+  async function removeGift(personId, giftId){
+    let matchingPerson = people.filter((person)=> person.id === personId);
+    let updatedGiftList = matchingPerson[0].ideas.filter((gift) => gift.giftId !== giftId );
+    matchingPerson[0].ideas = updatedGiftList;
+    try{
+      updatePerson(personId, matchingPerson );
+    } catch(e){
+      console.log(e)
+    }
+  }
+
+  return <PeopleContext.Provider value={[people, savePerson, removePerson, getGifts, gifts, saveGifts, removeGift]} {...props} />;
 }
 
 // HOOK

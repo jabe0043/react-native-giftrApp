@@ -41,7 +41,7 @@ export default function IdeaScreen({route, navigation}) {
       }
       <FlatList
         data = {gifts}
-        renderItem = {({item}) => <GiftItemList data={item} navigation={navigation} /> }
+        renderItem = {({item}) => <GiftItemList data={item} personId={personId} navigation={navigation} /> }
         keyExtractor={(item) => item.giftId}
       />
     <FAB personId={personId} person={person} navigation={navigation}>

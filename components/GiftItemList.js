@@ -1,8 +1,11 @@
 import {View, Image, Text, Pressable} from 'react-native'
+import { usePeople } from '../context/PeopleContext';
 
 
-export default function GiftItemList({data, navigation}){
+export default function GiftItemList({personId, data, navigation}){
   const { giftName, height, width, img, giftId } = data
+  const [people, savePerson, removePerson, getGifts, gifts, saveGifts, removeGift] = usePeople(); //using context
+
 
 
 
@@ -23,7 +26,9 @@ export default function GiftItemList({data, navigation}){
       </View>
 
       <View>
-        <Pressable>
+        <Pressable
+          onPress={()=>removeGift(personId, giftId)}
+        >
           <Text>delete</Text>
         </Pressable>
       </View>
