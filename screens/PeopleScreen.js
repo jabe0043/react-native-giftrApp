@@ -4,7 +4,7 @@ import { usePeople } from '../context/PeopleContext';
 // import { correctDateStrOffset } from '../utils/utils';
 import PersonList from '../components/PersonList';
 
-//TODO: add sort month/day for flatlist
+//TODO: add validation
 
 export default function PeopleScreen({navigation, route}) {
   const insets = useSafeAreaInsets();
