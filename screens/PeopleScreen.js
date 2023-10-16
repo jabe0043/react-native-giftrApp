@@ -1,5 +1,5 @@
-import { View, Text, Image, FlatList } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Text, Image, FlatList, StyleSheet, ImageBackground} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePeople } from '../context/PeopleContext';
 // import { correctDateStrOffset } from '../utils/utils';
 import PersonList from '../components/PersonList';
@@ -42,10 +42,17 @@ export default function PeopleScreen({navigation, route}) {
 
 
   return (
-    <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>People Screen</Text>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={styles.heroContainer}>
+          <ImageBackground source={require('../assets/fun.png')} resizeMode="contain" style={styles.image}>
+            <View style={styles.headerOverlay}>
+              <Text style={styles.heroTitle} >Welcome to {'\n'}Gift'r</Text>
+            </View>
+          </ImageBackground>
+        </View>
+
       {people.length === 0 && 
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ flex: .25, display:"flex", alignItems:"center", backgroundColor:"red", marginTop:40 }}>
           <Image 
             source={require("../assets/woman.png")} 
             style={{width:250, height:250}}
@@ -54,14 +61,52 @@ export default function PeopleScreen({navigation, route}) {
         </View>
       }
 
-      <View style={{flex:1, width:"85%"}}>
+      <View style={{flex:1, width:"95%"}}>
         <FlatList
-          style={{display:"flex", flexDirection:"column"}}
           data = {sortDates(people)}
           renderItem={({item}) => <PersonList data={item} DateOffset={correctDateStrOffset} navigation={navigation} remove={removePerson} /> }
           keyExtractor={item => item.id}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
+
+
+const styles = StyleSheet.create({
+
+  heroContainer:{ 
+    flex:.5,
+    width:"100%", 
+    backgroundColor:"#468b80", 
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
+  },
+
+  image: {
+    flex: 1,
+    backgroundColor:"#5dbaab", 
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
+  },
+
+  headerOverlay:{
+    width:"100%", 
+    height:"100%", 
+    display:"flex", 
+    justifyContent:"center",
+    backgroundColor: '#00000040',
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20
+  },
+
+  heroTitle: {
+    color: 'white',
+    fontSize: 42,
+    lineHeight: 40,
+    fontWeight: 'bold',
+    paddingLeft: 20,
+    paddingTop: 50
+  },
+  
+});

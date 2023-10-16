@@ -1,12 +1,12 @@
-import { View, Text, Image, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable, TouchableHighlight } from 'react-native';
 // import { correctDateStrOffset } from '../utils/utils';
+import { useState } from 'react';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
 
 
 export default function PersonList({data, navigation, remove, DateOffset}){
-
 
   function formatDate(date){
     let options = {
@@ -22,18 +22,13 @@ export default function PersonList({data, navigation, remove, DateOffset}){
   //right-side swipeable component (renders delete button)
   const renderRightActions = (progress, dragX) => {
     return (
-      <View 
-        style={{
-          display:"flex", 
-          justifyContent:"center", 
-          alignItems:"center", 
-          backgroundColor:"#eb7474",
-          height:100,
-          width:90
-        }}>
+      <View style={styles.deleteSwipeBtn}>
         <Pressable 
-          onPress={() => remove(data)}>
-          <View style={{ textAlign: 'center'}}>
+          onPress={() => {
+            remove(data)
+          }
+          }>
+          <View>
             <MaterialIcons name="delete" size={35} color="#fff" />
           </View>
         </Pressable>
@@ -44,29 +39,113 @@ export default function PersonList({data, navigation, remove, DateOffset}){
 
 return (
   <Swipeable renderRightActions={renderRightActions} rightOpenValue={-100}>
-    <View style={{flex:1, height:100, display:"flex", flexDirection:"row", backgroundColor:"grey", marginBottom:15, alignItems:"center", justifyContent:"space-between"}}>
-      <View style={{backgroundColor:`${data.bgColor}`, borderRadius:50, width:70, height:70, display:"flex", justifyContent:"center", alignItems:"center"}}>
-        <Text>{data.initials}</Text>
+    <View style={styles.cardContainer}>
+      <View style={styles.cardInfoContainer}>
+        <View style={[styles.cardAvatar, {backgroundColor:`${data.bgColor}`}]}>
+          <Text style={styles.initials}>
+            {data.initials}
+          </Text>
+        </View>
+      
+        <View>
+          <Text style={styles.title}>
+            {data.name}
+          </Text>
+          <Text style={styles.subTitle}>
+            {formatDate(data.dob)}
+          </Text>
+        </View>
       </View>
-      <View style={{display:"flex"}}>
-        <Text>{data.name}</Text>
-        <Text>{formatDate(data.dob)}</Text>
-        {/* <Text>{data.dob}</Text> */}
-      </View>
+
       <View>
-        <Pressable 
-          onPress={()=> {
-            navigation.navigate( "IdeaScreen", { 
-              person: data, 
-              personId: data.id 
-            });
-          }}
-          style={{paddingRight:15}}  
-        >
-          <Ionicons name="ios-gift" size={30} color="#fff" />
-        </Pressable>
+          <Pressable style={styles.btnPrimary} 
+            onPress={()=> {
+              navigation.navigate( "IdeaScreen", { 
+                person: data, 
+                personId: data.id 
+              });
+            }} 
+          >
+            <Ionicons name="ios-gift" style={styles.icon} />
+          </Pressable>
       </View>
     </View>
   </Swipeable>
 )
 }
+
+const styles = StyleSheet.create({
+
+  cardContainer:{
+    flex:1, 
+    height:100, 
+    display:"flex", 
+    flexDirection:"row", 
+    backgroundColor:"#FFF", 
+    marginTop: 7,
+    alignItems:"center", 
+    justifyContent:"space-between",
+    borderRadius: 7,
+    borderColor: '#80808077',
+    borderWidth: .5,
+  },
+
+  cardInfoContainer:{
+    display:"flex", 
+    flexDirection:"row", 
+    alignItems:"center", 
+    gap:20
+  },
+
+  cardAvatar: {
+    borderRadius:50, 
+    width:75,
+    height:75, 
+    marginLeft:10, 
+    justifyContent:"center", 
+    alignItems:"center"
+  },
+
+  initials: {
+    color:"#fff",
+    // fontSize: "20",
+    fontWeight:"500"
+  },
+
+  title:{
+    color: "#212427",
+    // fontSize: "17",
+    fontWeight:"500",
+    paddingBottom:5
+  },
+
+  subTitle:{
+    color: "#808080",
+  },
+
+  btnPrimary:{
+    backgroundColor:'#5dbaab88',
+    // backgroundColor:'#5dbaab',
+    marginRight: 20,
+    padding: 10,
+    borderRadius:7,
+  },
+
+  icon:{
+    fontSize: 22,
+    color:"#fff",
+    padding:0,
+  },
+
+  deleteSwipeBtn:{
+    display:"flex", 
+    justifyContent:"center", 
+    alignItems:"center", 
+    backgroundColor:"#eb7474",
+    marginTop: 7,
+    height:100,
+    width:90,
+    borderRadius: 7,
+  }
+  
+});

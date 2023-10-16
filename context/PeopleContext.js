@@ -90,6 +90,7 @@ function PeopleProvider(props){
 
   //Delete gift for person
   async function removeGift(personId, giftId){
+    console.log("gift removed");
     let matchingPerson = people.filter((person)=> person.id === personId);
     let updatedGiftList = matchingPerson[0].ideas.filter((gift) => gift.giftId !== giftId );
     matchingPerson[0].ideas = updatedGiftList;

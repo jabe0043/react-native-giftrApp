@@ -23,6 +23,7 @@ export default function IdeaScreen({route, navigation}) {
     getGifts(personId);
   })
 
+  //pictureSize: sizes && sizes.length > 0 ? sizes[2] : '300x400',
 
 
 
@@ -36,14 +37,21 @@ export default function IdeaScreen({route, navigation}) {
           source={require("../assets/shopping-man.png")} 
           style={{width:250, height:250}}
         />
-        <Text>add gifts for {person.name}</Text>
+        {/* <Text>add gifts for {person.name}</Text> */}
       </View>
       }
+      {gifts.length > 0 && 
       <FlatList
         data = {gifts}
         renderItem = {({item}) => <GiftItemList data={item} personId={personId} navigation={navigation} /> }
         keyExtractor={(item) => item.giftId}
       />
+      }
+      {/* <FlatList
+        data = {gifts}
+        renderItem = {({item}) => <GiftItemList data={item} personId={personId} navigation={navigation} /> }
+        keyExtractor={(item) => item.giftId}
+      /> */}
     <FAB personId={personId} person={person} navigation={navigation}>
 
     </FAB>

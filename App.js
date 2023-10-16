@@ -25,7 +25,13 @@ export default function App() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
             <NavigationContainer>
-              <Stack.Navigator>
+              <Stack.Navigator
+                screenOptions={{
+                  headerStyle: {backgroundColor: '#468b80', border:"none"},
+                  headerTintColor: 'white',
+                  headerShadowVisible: false
+                }}
+              >
                 <Stack.Screen 
                   name="PeopleScreen" 
                   component={PeopleScreen}
@@ -35,6 +41,7 @@ export default function App() {
                       <Button
                         onPress={() => navigation.navigate('AddPersonScreen')}
                         title="Add"
+                        color="#fff"
                       />
                     )
                   })}
