@@ -3,17 +3,35 @@ import { StyleSheet, View, Text, Image, Pressable, TouchableHighlight } from 're
 import { useState } from 'react';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
+import CustomModal from './CustomModal'
+
 
 
 
 export default function PersonList({data, navigation, remove, DateOffset}){
+  const [modalVisible, setModalVisible] = useState(false);
+    
+  // called from pressable that triggers the modal
+    const showModal = () => {
+      setModalVisible(true);
+    };
+  
+    // called from modal's pressable that hides the modal (ie: cancel)
+    const hideModal = () => {
+      setModalVisible(false);
+    };
+  
+    // called from modal's pressable that confirms the action (del, submit etc.)
+    function handleConfirm(){
+      remove(data)
+    }
 
   function formatDate(date){
     let options = {
       month: 'long',
       day: 'numeric',
     };
-    let dateString = new Intl.DateTimeFormat('en-CA', options).format(DateOffset(date));
+    let dateString = new Intl.DateTimeFormat('en-CA', options).format(DateOffset(date))
     return dateString
   }
 
@@ -24,10 +42,7 @@ export default function PersonList({data, navigation, remove, DateOffset}){
     return (
       <View style={styles.deleteSwipeBtn}>
         <Pressable 
-          onPress={() => {
-            remove(data)
-          }
-          }>
+          onPress={showModal}>
           <View>
             <MaterialIcons name="delete" size={35} color="#fff" />
           </View>
@@ -69,6 +84,9 @@ return (
             <Ionicons name="ios-gift" style={styles.icon} />
           </Pressable>
       </View>
+
+      <CustomModal visible={modalVisible} onClose={hideModal} onConfirm={handleConfirm} name={data.name} type={"person"} />
+    
     </View>
   </Swipeable>
 )
@@ -126,7 +144,7 @@ const styles = StyleSheet.create({
   btnPrimary:{
     backgroundColor:'#5dbaab88',
     // backgroundColor:'#5dbaab',
-    marginRight: 20,
+    marginRight: 10,
     padding: 10,
     borderRadius:7,
   },

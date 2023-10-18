@@ -3,6 +3,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePeople } from '../context/PeopleContext';
 // import { correctDateStrOffset } from '../utils/utils';
 import PersonList from '../components/PersonList';
+import FAB from '../components/FAB';
+
 
 //TODO: add validation
 
@@ -52,7 +54,7 @@ export default function PeopleScreen({navigation, route}) {
         </View>
 
       {people.length === 0 && 
-        <View style={{ flex: .25, display:"flex", alignItems:"center", backgroundColor:"red", marginTop:40 }}>
+        <View style={{ flex: .25, display:"flex", alignItems:"center", marginTop:40 }}>
           <Image 
             source={require("../assets/woman.png")} 
             style={{width:250, height:250}}
@@ -68,7 +70,10 @@ export default function PeopleScreen({navigation, route}) {
           keyExtractor={item => item.id}
         />
       </View>
+
+      <FAB navigation={navigation} page={"AddPersonScreen"}/>
     </View>
+    
   );
 }
 

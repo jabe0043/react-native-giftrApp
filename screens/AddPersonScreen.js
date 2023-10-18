@@ -4,49 +4,32 @@ import { useState } from 'react';
 import DatePicker from 'react-native-modern-datepicker';
 import { usePeople } from '../context/PeopleContext';
 import * as Crypto from 'expo-crypto';
-// import ScreenHeaders from '../components/ScreenHeaders';
-import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-/*TODO:
-validation modal window
-add trim(), capitalize names + cleaning/formatting fn, ln and dob.
-KEYBOARDAVOIDINGVIEW 
-*/
 
 export default function AddPersonScreen({navigation, route}) {
   const insets = useSafeAreaInsets(); //TODO:
   const [dob, setDob] = useState("");
-  // const [firstName, setFirstName] = useState("")
-  // const [lastName, setLastName] = useState("");
   const [name, setName] = useState("");
   const [people, savePerson] = usePeople() //importing the savePerson function from context provider. 
   const [visibleDateModal, setVisibleDateModal] = useState(false);
+  
 
   function avatarBg(){
     const colorArr = ["#fac273", "#83a3d3", "#eb7474", "#5dbaab","#625583" ]
     const bgColor = Math.floor(Math.random() * (colorArr.length + 1))
     return colorArr[bgColor]
   }
-
   let bgColor = avatarBg();
 
-  // function createPerson(fn, ln, dob){
     function createPerson(name, dob){
-    // if(fn === "" || ln === "" || dob === "" ){
-    //   console.warn("MISSING DATA")
     if( name === "" || dob === "" ){
       console.warn("MISSING DATA")
     } else {
-      console.log(bgColor)
-      const initials = name.trim() //new
       const personModel = {
         id: Crypto.randomUUID(),
-        // initials: `${fn.slice(0, 1)} ${ln.slice(0,1)}`,
-        // initials: `${initials[0].slice(0,1)} ${initials[1].slice(0,1)} `,
-        initials: initials.split(" ").length > 1 ? `${initials[0].slice(0,1)} ${initials[1].slice(0,1)}` : `${initials[0].slice(0,1)}`,
+        initials: name.trim().split(" ").map(word => word.slice(0, 1).toUpperCase()).join(" "),
         bgColor: bgColor ? bgColor : "#fac273",
-        // name: `${fn} ${ln}`,
         name: name,
         dob: dob,    
         ideas:[]
@@ -66,44 +49,61 @@ export default function AddPersonScreen({navigation, route}) {
       </View>
     </ImageBackground>
 
-    <View style={styles.formContainer}>
-      <View style={styles.nameInputFlex}>
-        
-        <View style={styles.testFormInputContainer}>
-          <View style={styles.testName}>
-            <Text>Name</Text>
-            <TextInput style={styles.nameInput}
-              onChangeText={setName}
-              value={name}
-              // autoCapitalize='words'
-            />
-          </View>
+    <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+      <View style={styles.formContainer}>
+        <View style={styles.nameInputFlex}>
+          <View style={styles.testFormInputContainer}>
+            <View style={styles.testName}>
+              <Text>Name</Text>
+              <TextInput style={styles.nameInput}
+                placeholder='Full Name'
+                onChangeText={setName}
+                value={name}
+                autoCorrect={false}
+                enterKeyHint='done'
+                autoCapitalize='words'
+              />
+            </View>
 
-          <View style={styles.testDob}>
-            <Text>Date of Birth</Text>
-            <TextInput style={styles.testDobInput}
-              onChangeText={setDob}
-              value={dob}
-              placeholder='dob'
-              
-            />
-            <Pressable onPress={() => setVisibleDateModal(true)}>
-              <View style={ styles.iconContainer}>
-                <MaterialCommunityIcons name="calendar-month-outline" size={24} color="#F9F6EE" />
-              </View>
-            </Pressable>
+            <View style={styles.testDob}>
+              <Text>Date of Birth</Text>
+              <TextInput style={styles.testDobInput}
+                placeholder='yyyy-mm-dd'
+                onChangeText={setDob}
+                value={dob}
+                editable={false}
+              />
+              <Pressable onPress={() => setVisibleDateModal(true)}>
+                <View style={ styles.iconContainer}>
+                  <MaterialCommunityIcons name="calendar-month-outline" size={24} color="#F9F6EE" />
+                </View>
+              </Pressable>
+            </View>
           </View>
         </View>
-
       </View>
+    </KeyboardAvoidingView>
+
+
+    <View style={styles.btnContainer}>
+      <Pressable style={[styles.btn, styles.btnSecondary]}
+        onPress={()=> navigation.navigate("PeopleScreen")}
+        >
+        <Text style={styles.btnTextStyle}> Cancel </Text>
+      </Pressable>
+
+      <Pressable style={styles.btn}
+        onPress={()=> createPerson(name, dob)}
+        >
+        <Text style={styles.btnTextStyle}> Save </Text>
+      </Pressable>
     </View>
 
-    <View style={styles.centeredView}>
       <Modal
-        animationType="slide-down"
-        transparent={true}
+        animationType="slide"
+        transparent
         visible={visibleDateModal}
-        >
+      >
         <View style={styles.centeredView}>
           <DatePicker 
             onSelectedChange={date => setDob(date.replaceAll("/", "-"))}
@@ -115,28 +115,11 @@ export default function AddPersonScreen({navigation, route}) {
           <View style={styles.modalBtnContainer}>
             <Pressable style={styles.modalButton}
               onPress={() => setVisibleDateModal(!visibleDateModal)}>
-              <Text style={styles.textStyle}>Return</Text>
+              <Text style={styles.btnTextStyle}>Return</Text>
             </Pressable>
           </View>
         </View>
       </Modal>
-    </View>
-
-    <View style={styles.btnContainer}>
-      <Pressable style={[styles.btn, styles.btnSecondary]}
-        onPress={()=> navigation.navigate("PeopleScreen")}
-        >
-        <Text style={{color:"#fff", fontWeight:"600"}}> Cancel </Text>
-      </Pressable>
-
-      <Pressable style={styles.btn}
-        // onPress={()=> createPerson(firstName, lastName, dob)}
-        onPress={()=> createPerson(name, dob)}
-        >
-        <Text style={{color:"#fff", fontWeight:"600"}}> Save </Text>
-      </Pressable>
-    </View>
-
   </SafeAreaView>
   );
 }
@@ -152,6 +135,7 @@ const styles = StyleSheet.create({
     justifyContent:"space-between",
     alignItems:"space-between",
     gap:50,
+    paddingTop:30,
   },
 
   formInputContainer:{
@@ -231,7 +215,7 @@ const styles = StyleSheet.create({
   btnContainer:{
     alignSelf:"center",
     width:"95%",
-    paddingBottom:25,
+    paddingBottom:20,
     flexDirection:'row',
     justifyContent:"space-between",
     alignItems:"center",
@@ -277,7 +261,8 @@ const styles = StyleSheet.create({
   centeredView: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 110
+    backgroundColor:"#0000005f",    
+    flex:1,
   },
 
   modalButton: {
@@ -286,7 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#5dbaab',
   },
 
-  textStyle: {
+  btnTextStyle: {
     color: 'white',
     fontWeight: 'bold',
     textAlign: 'center',

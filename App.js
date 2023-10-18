@@ -1,5 +1,5 @@
 import { PeopleProvider } from './context/PeopleContext'
-import { StyleSheet, Button } from 'react-native';
+import { StyleSheet, Button, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -19,7 +19,12 @@ import AddIdeaScreen from './screens/AddIdeaScreen'
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+export default function App(route, navigation) {
+  const OS = Platform.OS;
+  console.log(OS);
+
+
+
   return (
     <PeopleProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -38,6 +43,7 @@ export default function App() {
                   options={({ navigation }) => ({
                     title: "Giftees",
                     headerRight: () => (
+                      OS === "ios" && 
                       <Button
                         onPress={() => navigation.navigate('AddPersonScreen')}
                         title="Add"
@@ -58,12 +64,17 @@ export default function App() {
                   component={IdeaScreen} 
                   options={({ navigation }) => ({
                     title:"Gifts",
-                    // headerRight: () => (
-                    //   <Button
-                    //     onPress={() => navigation.navigate('AddIdeaScreen')}
-                    //     title="Add Gifts"
-                    //   />
-                    // )
+                    headerRight: () => (
+                      // OS === "ios" && 
+                      <Button
+                        onPress={() => navigation.navigate('AddIdeaScreen', {
+                          personId: "personId"
+                        }
+                        )}
+                        title="Add Gifts"
+                        color="#fff"
+                      />
+                      )
                 })}
                 />
                 <Stack.Screen 

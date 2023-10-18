@@ -32,7 +32,6 @@ function PeopleProvider(props){
   async function savePerson(person){
     console.log("Save person called from context")
     person = Array.isArray(person) ? person : [person]
-    console.log("SAVING...", person)
     let newPeopleList = [...person, ...people]
     setPeople(newPeopleList)
     try{

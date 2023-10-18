@@ -7,10 +7,6 @@ import { usePeople } from '../context/PeopleContext';
 import * as Crypto from 'expo-crypto';
 
 
-
-
-
-
 export default function AddIdeaScreen({route, navigation}) {
   const insets = useSafeAreaInsets();
   const [giftName, setGiftName] = useState("");
@@ -22,9 +18,11 @@ export default function AddIdeaScreen({route, navigation}) {
   const [type, setType] = useState(CameraType.back);
   const [status, requestPermission] = Camera.useCameraPermissions();
   const [img, setImg] = useState(null)
-  const { personId, person } = route.params   //accessing the personId route param passed by the FAB.
+  const { personId } = route.params   //accessing the personId route param passed by the FAB.
   const [people, savePerson, removePerson, getGifts, gifts, saveGifts] = usePeople(); //using context
 
+  console.log(personId);
+  console.log(route.params);
 
   useEffect(()=>{
     requestPermission().then(perm => {
@@ -37,22 +35,21 @@ export default function AddIdeaScreen({route, navigation}) {
 
   function takePhoto(){
     if(!hasPermission){
-      console.log("No Camera Access Permission Given.");
+      console.log("No Camera Access Permission Given.");  //modal
       return;
     }
     const opts ={
-      quality: 0.8, // 0 - 1
-      zoom: 0.2, // 0 - 1 
+      quality: 0.8, 
+      zoom: 0.2,
       imageType: 'jpg',
       skipProcessing: false,
     }
     camera.takePictureAsync()
     .then(pic =>{
-      // console.log(pic.uri)
-      // console.log(pic.width)
-      // console.log(pic.height)
-      let w = screenWidth * 0.8;
-      let h = (w/pic.width) * pic.height
+      let w = screenWidth * 0.5;
+      let h = (w * 3) / 2;
+      console.log("w,pic width, pic height", w, pic.width, pic.height)
+      console.log('PIC DIMENSION:', w, h)
       setImg({uri: pic.uri, width: w, height: h})
     })
     .catch(err => console.log(err.message));
@@ -60,73 +57,74 @@ export default function AddIdeaScreen({route, navigation}) {
 
   //create the gift model and save it through context
   function createAndSaveGift(personId){
-    const giftModel = {
-      giftId: Crypto.randomUUID(),
-      giftName: giftName,
-      img: img.uri,
-      width: img.width,
-      height: img.height
+    if( giftName === "" ){
+      console.warn("MISSING DATA")
+    } else{
+      const giftModel = {
+        giftId: Crypto.randomUUID(),
+        giftName: giftName,
+        img: img.uri,
+        width: img.width,
+        height: img.height
+      }
+      saveGifts(personId, giftModel)
+      .then(()=>navigation.navigate("IdeaScreen", {
+        personId: personId 
+      }))
     }
-    // console.log("Gift model:", giftModel)
-    saveGifts(personId, giftModel)
-    .then(()=>navigation.navigate("IdeaScreen", {
-      person: person, 
-      personId: personId 
-    }))
   }
 
 
   return (
       <View style={[styles.container, {paddingVertical: img ? 40 : 0}]}>
       <View>
-        {
-          hasPermission ? (
+        { hasPermission ? (
           <>
             <Camera 
-              style={{width: screenWidth, height: img ? screenHeight * 0 : screenHeight * 0.8}}
+              style={{width: screenWidth, height: img ? screenHeight * 0 : screenHeight * 0.75}}
               type={type} 
               ref={(r)=>{camera= r}}>
               </Camera>
           </>
-          ) : (<Text style={styles.txt}>Please allow Camera </Text>)
+          ) : (<Text style={styles.txt}>Please allow Camera Access.</Text>)
         }
-      </View>
+      </View> 
       <View>
         {img ? (
-          <View style={{alignSelf:"center"}}>
-            <Image source={{uri: img.uri}} style= {{ width: img.width, height: img.height}}/>
-            <View >
-              <KeyboardAvoidingView> 
-                <Text>Gift Name</Text>
-                <TextInput
+          <View style={{alignSelf:"center", alignItems:"center", width:"95%"}}>
+            <Image source={{uri: img.uri}} style={{ width: 300, height: (300 * 3)/2, marginBottom:50 }}/>
+            <Text style={{alignSelf:"flex-start"}}>Gift Name</Text>
+              <TextInput
                   style={styles.input}
                   onChangeText={setGiftName}
                   value={giftName}
-                  // placeholder="Last Name"
-                />
-              </KeyboardAvoidingView>
-              <View style={{display:"flex", flexDirection:"row", justifyContent:"space-around", paddingTop:15}}>
+                  autoCorrect={false}
+                  enterKeyHint='done'
+              />
+            <View style={{flexDirection:"row",gap:10, paddingTop:15}}>
+              <Pressable 
+                style={[styles.btn, styles.btnSecondary]}
+                onPress={()=>navigation.navigate("IdeaScreen", {
+                  personId: personId 
+                })}
+              >
+                <Text style={styles.btnTextStyle}>Cancel</Text>
+              </Pressable>
                 <Pressable 
-                    style={{height:40, width:80, backgroundColor:"#eb7474", display:"flex", justifyContent:"center", alignItems:"center", borderRadius:20}}
-                    onPress={()=> console.log("cancel and go back to idea screen")}
-                >
-                  <Text>Cancel</Text>
-                </Pressable>
-                <Pressable 
-                  style={{height:40, width:80, backgroundColor:"#5dbaab", display:"flex", justifyContent:"center", alignItems:"center", borderRadius:20}}
+                  style={styles.btn}
                   onPress={()=> createAndSaveGift(personId)}
                   >
-                    <Text>Save</Text>
+                    <Text style={styles.btnTextStyle}>Save</Text>
                 </Pressable>
               </View> 
-            </View>
-          </View>
+      </View>
         ) : (
-          <View style={{display: "flex", alignItems:"center", justifyContent:"center"}}>
-            {/* <Text style={styles.txt}>No images taken yet.</Text> */}
-            <Pressable onPress={()=>{ takePhoto() }}>
-              <View style={{backgroundColor:'black', flex:1, alignItems:'center'}}>
-                <MaterialIcons name="camera-alt" size={50} color="white"/>
+          <View style={{height:"100%", backgroundColor:"#5dbaab",}}>
+            <Pressable style={{display: "flex", alignItems:"center", paddingTop:10}} 
+              onPress={()=>{ takePhoto() }}
+            >
+              <View style={{backgroundColor:"#eb7474", borderColor:"#fff", borderWidth:5, alignItems:'center', justifyContent:"center", borderRadius:50, width:75, height:75}}>
+                <MaterialIcons name="camera-alt" size={35} color="white"/>
               </View>
             </Pressable>
           </View>
@@ -138,13 +136,13 @@ export default function AddIdeaScreen({route, navigation}) {
 
 const styles = StyleSheet.create({
   input: {
-    height: 40,
-    width: 300,
-    margin: 12,
+    height: 50,
+    width: "100%",
     borderWidth: 1,
-    padding: 10,
-    borderRadius:25,
-    backgroundColor:"#fff"
+    borderColor:'#80808077',
+    borderRadius:7,
+    backgroundColor:"#fff",
+    paddingLeft:10,
   },
   container: {
     flex: 1,
@@ -153,5 +151,25 @@ const styles = StyleSheet.create({
   },
   txt:{
     fontSize: 20
-  }
+  },
+
+  btn:{
+    height:50, 
+    width:"49%", 
+    backgroundColor:"#5dbaab", 
+    display:"flex", 
+    justifyContent:"center", 
+    alignItems:"center", 
+    borderRadius:7
+  },
+
+  btnSecondary:{
+    backgroundColor:"#eb7474"
+  },
+
+  btnTextStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
 });

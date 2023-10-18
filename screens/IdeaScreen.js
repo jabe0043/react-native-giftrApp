@@ -1,60 +1,98 @@
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, StyleSheet, ImageBackground, FlatList } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import { usePeople } from '../context/PeopleContext';
 import FAB from '../components/FAB';
-import { FlatList } from 'react-native-gesture-handler';
+// import { FlatList } from 'react-native-gesture-handler';
 import GiftItemList from '../components/GiftItemList';
 
-  /*TODO: if I do const[gifts, getGifts] = usePeople() to get the "gifts" state and the getGifts function directly from here, it breaks my app.
-  Instead, I have const[people, savePerson, removePerson, getGifts] = usePeople([]); in my PeopleScreen. 
-  I then pass the getGifts function to the PersonList and call the function in the onPress(). 
-  WHY?????? 
-  */
 
 export default function IdeaScreen({route, navigation}) {
   const insets = useSafeAreaInsets();
 
   const { person, personId } = route.params   //being passed from the PersonList
-  // console.log(person, personId)
+  // console.log(person, personId);
   const [people, savePerson, removePerson, getGifts, gifts] = usePeople(); //using context
 
   useEffect(()=>{
     getGifts(personId);
   })
 
+  // find the person associated to the gifts via personId from route params
+  function findPerson(id){
+    const match = people.filter((person) => person.id === id)
+    personName = match[0].name
+    return match[0].name
+  }
+
+
   //pictureSize: sizes && sizes.length > 0 ? sizes[2] : '300x400',
 
 
-
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Idea Screen</Text>
-      {/* <View><Text>{`Gifts for ${person.name}`}</Text></View> */}
+    <View style={{ flex: 1, alignItems: 'center' }}>
+        <View style={styles.heroContainer}>
+          <ImageBackground source={require("../assets/shopping-man.png")} resizeMode="cover" style={styles.image}>
+            <View style={styles.headerOverlay}>
+              <Text style={styles.heroTitle} >{`Ideas for ${'\n'}${findPerson(personId)}`}</Text>
+            </View>
+          </ImageBackground>
+        </View>
+
       {gifts.length === 0 && 
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Image 
-          source={require("../assets/shopping-man.png")} 
-          style={{width:250, height:250}}
-        />
-        {/* <Text>add gifts for {person.name}</Text> */}
+      <View style={{marginTop:"10%"}}>
+        <Text>Add your first gift idea for {findPerson(personId)}</Text>
       </View>
       }
-      {gifts.length > 0 && 
+
+      <View style={{flex:1, width:"95%"}}>
       <FlatList
         data = {gifts}
         renderItem = {({item}) => <GiftItemList data={item} personId={personId} navigation={navigation} /> }
         keyExtractor={(item) => item.giftId}
       />
-      }
-      {/* <FlatList
-        data = {gifts}
-        renderItem = {({item}) => <GiftItemList data={item} personId={personId} navigation={navigation} /> }
-        keyExtractor={(item) => item.giftId}
-      /> */}
-    <FAB personId={personId} person={person} navigation={navigation}>
+      </View>
 
-    </FAB>
+    <FAB personId={personId} person={person} navigation={navigation} page={"AddIdeaScreen"}/>
+
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+
+  heroContainer:{ 
+    flex:1,
+    width:"100%", 
+    backgroundColor:"#468b80", 
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
+  },
+
+  image: {
+    flex: 1,
+    backgroundColor:"#5dbaab", 
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20,
+  },
+
+  headerOverlay:{
+    width:"100%", 
+    height:"100%", 
+    display:"flex", 
+    justifyContent:"center",
+    backgroundColor: '#00000040',
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 20
+  },
+
+  heroTitle: {
+    color: 'white',
+    fontSize: 42,
+    lineHeight: 40,
+    fontWeight: 'bold',
+    paddingLeft: 20,
+    paddingTop: 50
+  },
+  
+});

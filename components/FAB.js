@@ -1,36 +1,36 @@
 import { Pressable, Text, StyleSheet } from "react-native";
+import { AntDesign } from '@expo/vector-icons';
 
-export default function FAB ({person, navigation, personId}){
+export default function FAB ({person, navigation, personId, page}){
   return (
       <Pressable style={styles.container}
           onPress={()=>{
-            // console.log("FAB", personId)
-            // console.log("FAB",person)
-            navigation.navigate("AddIdeaScreen", {
-              personId: personId
-            })
+            if(page === "AddIdeaScreen"){
+              navigation.navigate("AddIdeaScreen", {
+                personId: personId
+              })
+            } else {
+              navigation.navigate(page);
+            }
           }}>
-          <Text style={styles.title}>add</Text>
+          <AntDesign name="plus" size={28} color="#fff" />
       </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-      /* position the content inside the FAB */
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 20,
-      paddingVertical: 10,
-      /* for the FAB itself */
-      borderRadius: 10,
+      paddingVertical: 20,
+      borderRadius: 50,
       position: 'absolute',
-      bottom: 70,
+      bottom: 50,
       right: 40,
-      backgroundColor: '#26653A',
+      backgroundColor: "#5dbaab",
   },
   title: {
-      /* style the text inside the FAB */
       fontSize: 18,
       color: '#fff',
       fontWeight: 'bold',
