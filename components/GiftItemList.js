@@ -29,6 +29,7 @@ export default function GiftItemList({personId, data, navigation}){
   // called from modal's pressable that confirms the action (del, submit etc.)
   function handleConfirm(){
     removeGift(personId, giftId)
+    setModalVisible(false);
   }
 
 
@@ -60,7 +61,7 @@ export default function GiftItemList({personId, data, navigation}){
       </View>
 
       <CustomModal visible={modalVisible} onClose={hideModal} onConfirm={handleConfirm} name={giftName} type={"gift"} />
-      <ImagePreviewModal visible={imgModalVisible} onClose={hideModal} img={img} />
+      <ImagePreviewModal isVisible={imgModalVisible} onClose={hideModal} img={img} />
 
     </View>
   )

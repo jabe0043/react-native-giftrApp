@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
 
   modalBtnPrimary:{
     backgroundColor:"#eb7474",
-    borderRadius:"7",
+    borderRadius:7,
   }
 
 

@@ -2,11 +2,16 @@ import { Modal, View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { useState } from 'react';
 
 
-export default function ImagePreviewModal({ visible, onClose, img }){
+export default function ImagePreviewModal({ isVisible, onClose, img }){
   // console.log(img)
 
   return (
-    <Modal transparent visible={visible} onRequestClose={onClose} animationType="fade" >
+    <Modal
+      visible={isVisible}  
+      transparent = {true}
+      onRequestClose={onClose} 
+      animationType="fade" 
+    >
       <View style={styles.modalContainer}>
         <View style={styles.modalBox}>
           <Image source={{uri: img}} style={styles.modalFullImg}/>

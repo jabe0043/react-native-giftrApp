@@ -18,11 +18,12 @@ export default function AddIdeaScreen({route, navigation}) {
   const [type, setType] = useState(CameraType.back);
   const [status, requestPermission] = Camera.useCameraPermissions();
   const [img, setImg] = useState(null)
-  const { personId } = route.params   //accessing the personId route param passed by the FAB.
+  const { personId } = route.params   
   const [people, savePerson, removePerson, getGifts, gifts, saveGifts] = usePeople(); //using context
 
-  console.log(personId);
-  console.log(route.params);
+
+  // console.log(personId);
+  // console.log("route params:", route.params);
 
   useEffect(()=>{
     requestPermission().then(perm => {

@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, ImageBackground, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, ImageBackground, FlatList, Button } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import { usePeople } from '../context/PeopleContext';
@@ -9,14 +9,33 @@ import GiftItemList from '../components/GiftItemList';
 
 export default function IdeaScreen({route, navigation}) {
   const insets = useSafeAreaInsets();
-
-  const { person, personId } = route.params   //being passed from the PersonList
+  const OS = Platform.OS;
+  const { person, personId } = route.params   //being passed from PersonList
   // console.log(person, personId);
   const [people, savePerson, removePerson, getGifts, gifts] = usePeople(); //using context
+
 
   useEffect(()=>{
     getGifts(personId);
   })
+
+  //conditionally render ios top-right header
+  useEffect(()=>{
+    if(OS === "ios"){
+      navigation.setOptions({
+        headerRight: () => (
+          <Button
+            title="Add Idea"
+            color="#fff"
+            onPress={() => navigation.navigate('AddIdeaScreen',{
+              personId: personId
+            })}
+          />
+        )
+      })
+    }
+  },[])
+
 
   // find the person associated to the gifts via personId from route params
   function findPerson(id){

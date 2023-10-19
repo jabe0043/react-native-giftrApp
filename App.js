@@ -1,5 +1,5 @@
 import { PeopleProvider } from './context/PeopleContext'
-import { StyleSheet, Button, Platform } from 'react-native';
+import { Button, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -15,15 +15,11 @@ import AddIdeaScreen from './screens/AddIdeaScreen'
 - conditional render for ios header "add" link vs android FAB btn. may need to make a header componenet rather than using the stack.screen header prop. 
 */
 
-//https://docs.swmansion.com/react-native-gesture-handler/docs/fundamentals/installation //handler gesture
-
 const Stack = createNativeStackNavigator();
 
 export default function App(route, navigation) {
   const OS = Platform.OS;
   console.log(OS);
-
-
 
   return (
     <PeopleProvider>
@@ -64,17 +60,6 @@ export default function App(route, navigation) {
                   component={IdeaScreen} 
                   options={({ navigation }) => ({
                     title:"Gifts",
-                    headerRight: () => (
-                      // OS === "ios" && 
-                      <Button
-                        onPress={() => navigation.navigate('AddIdeaScreen', {
-                          personId: "personId"
-                        }
-                        )}
-                        title="Add Gifts"
-                        color="#fff"
-                      />
-                      )
                 })}
                 />
                 <Stack.Screen 
@@ -90,11 +75,3 @@ export default function App(route, navigation) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

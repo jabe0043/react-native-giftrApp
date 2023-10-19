@@ -2,7 +2,11 @@ import { Pressable, Text, StyleSheet } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
 
 export default function FAB ({person, navigation, personId, page}){
+  
+  const OS = Platform.OS;
+
   return (
+    OS === "android" &&
       <Pressable style={styles.container}
           onPress={()=>{
             if(page === "AddIdeaScreen"){

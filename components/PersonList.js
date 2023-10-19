@@ -35,8 +35,6 @@ export default function PersonList({data, navigation, remove, DateOffset}){
     return dateString
   }
 
-
-
   //right-side swipeable component (renders delete button)
   const renderRightActions = (progress, dragX) => {
     return (
@@ -77,7 +75,7 @@ return (
             onPress={()=> {
               navigation.navigate( "IdeaScreen", { 
                 person: data, 
-                personId: data.id 
+                personId: data.id, 
               });
             }} 
           >
