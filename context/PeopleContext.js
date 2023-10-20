@@ -13,7 +13,6 @@ function PeopleProvider(props){
   useEffect(() => {
     AsyncStorage.getItem(asKey)
       .then((peopleList) =>{
-        // peopleList === null ? AsyncStorage.setItem(asKey, JSON.stringify([])) : setPeople(JSON.parse(peopleList));
         if (peopleList === null){ 
           return AsyncStorage.setItem(asKey, JSON.stringify([]));
         } else {
@@ -28,30 +27,32 @@ function PeopleProvider(props){
   }, []);
 
 
-  //SAVE a person in state and update async storage       //TODO: MIX with the UpdatePerson function so it can do either or.
+  //SAVE a person in state and update async storage      
   async function savePerson(person){
-    console.log("Save person called from context")
     person = Array.isArray(person) ? person : [person]
     let newPeopleList = [...person, ...people]
-    setPeople(newPeopleList)
+    // setPeople(newPeopleList)
     try{
-      await AsyncStorage.setItem(asKey, JSON.stringify(newPeopleList))
+      // throw new Error("ERROR TESTING");   //TODO: for testing
+      await AsyncStorage.setItem(asKey, JSON.stringify(newPeopleList)) 
+      setPeople(newPeopleList) 
       console.log("User saved. AsyncStorage Updated.")
     } catch (e){
-      console.log (e)
+      throw e;
     }
   }
 
   //DELETE a person from state and update async storage
   async function removePerson(person){
-    console.log("Remove person called from context")
     let newList = people.filter((item) => item.id !== person.id);
-    setPeople(newList);
+    // setPeople(newList);
     try{
+      // throw new Error("ERROR TESTING");   //TODO: for testing
       await AsyncStorage.setItem(asKey, JSON.stringify(newList));
+      setPeople(newList);
       console.log("User deleted. AsyncStorage updated")
     } catch(e){
-      console.log(e)
+      throw(e);
     }
   }
 
@@ -68,9 +69,9 @@ function PeopleProvider(props){
     let matchingPerson = people.filter((person)=> person.id === personId);
     matchingPerson[0].ideas.push(gift);
     try{
-      updatePerson(personId, matchingPerson);
+      await updatePerson(personId, matchingPerson);
     } catch(e){
-      console.log(e)
+      throw(e)
     }
   }
 
@@ -78,25 +79,26 @@ function PeopleProvider(props){
   async function updatePerson(personId, updatedPerson){
     let filteredList = people.filter((person) => person.id !== personId);
     let newList = [...updatedPerson, ...filteredList]
-    setPeople(newList);
     try{
+      // throw new Error("ERROR TESTING");   //TODO: for testing both delete and save gift
       await AsyncStorage.setItem(asKey, JSON.stringify(newList))
+      setPeople(newList);
       console.log("Saved list with updated gift list. AsyncStorage Updated.")
     } catch (e){
-      console.log(e)
+      throw(e);
     }
   }
 
   //Delete gift for person
   async function removeGift(personId, giftId){
-    console.log("gift removed");
     let matchingPerson = people.filter((person)=> person.id === personId);
     let updatedGiftList = matchingPerson[0].ideas.filter((gift) => gift.giftId !== giftId );
     matchingPerson[0].ideas = updatedGiftList;
     try{
-      updatePerson(personId, matchingPerson );
+      await updatePerson(personId, matchingPerson );
+      console.log("gift removed");
     } catch(e){
-      console.log(e)
+      throw(e);
     }
   }
 

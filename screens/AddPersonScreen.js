@@ -5,6 +5,7 @@ import DatePicker from 'react-native-modern-datepicker';
 import { usePeople } from '../context/PeopleContext';
 import * as Crypto from 'expo-crypto';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import CustomModal from '../components/CustomModal';
 
 
 export default function AddPersonScreen({navigation, route}) {
@@ -13,7 +14,9 @@ export default function AddPersonScreen({navigation, route}) {
   const [name, setName] = useState("");
   const [people, savePerson] = usePeople() //importing the savePerson function from context provider. 
   const [visibleDateModal, setVisibleDateModal] = useState(false);
-  
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalProps, setModalProps] = useState({}) //modal props state because it's being used by two separate functions on this page.
+
 
   function avatarBg(){
     const colorArr = ["#fac273", "#83a3d3", "#eb7474", "#5dbaab","#625583" ]
@@ -22,9 +25,25 @@ export default function AddPersonScreen({navigation, route}) {
   }
   let bgColor = avatarBg();
 
-    function createPerson(name, dob){
+
+
+  const showModal = () => {
+    setModalVisible(true);
+  };
+
+  function handleConfirm(){
+    setModalVisible(false);
+  }
+
+  function createPerson(name, dob){
     if( name === "" || dob === "" ){
-      console.warn("MISSING DATA")
+      setModalProps({
+        visible: modalVisible, 
+        onConfirm: handleConfirm, 
+        msg:"Name and Date of Birth are required.",
+        btnInfo: {qty:1, text:" Ok ", color:"#5dbaab"} ,
+      })
+      showModal(); 
     } else {
       const personModel = {
         id: Crypto.randomUUID(),
@@ -36,13 +55,21 @@ export default function AddPersonScreen({navigation, route}) {
       }
       savePerson(personModel)   //saving through context.
       .then(() => navigation.navigate("PeopleScreen"))
+      .catch(() =>{
+        setModalProps({
+          visible: modalVisible, 
+          onConfirm: handleConfirm, 
+          msg:"Something went wrong. User could not be saved.",
+          btnInfo: {qty:1, text:"Return", color:"#5dbaab"} ,
+        }),
+        showModal()});
+      }
     }
-  }
+  
 
 
   return (
   <SafeAreaView style={{ flex: 1 }}>
-
     <ImageBackground source={require('../assets/relationship-heart-stipple-illustrations.png')} resizeMode="cover" style={styles.image}>
       <View style={styles.headerOverlay}>
         <Text style={styles.heroTitle}>Add a New {'\n'}Giftee</Text>
@@ -92,7 +119,9 @@ export default function AddPersonScreen({navigation, route}) {
         <Text style={styles.btnTextStyle}> Cancel </Text>
       </Pressable>
 
-      <Pressable style={styles.btn}
+      <Pressable 
+        disabled={(name === "" || dob === "") ? true : false}
+        style={[styles.btn, (name === "" || dob === "") ? styles.btnDisabled : null]}
         onPress={()=> createPerson(name, dob)}
         >
         <Text style={styles.btnTextStyle}> Save </Text>
@@ -120,6 +149,13 @@ export default function AddPersonScreen({navigation, route}) {
           </View>
         </View>
       </Modal>
+
+      <CustomModal 
+          visible= {modalVisible} 
+          onConfirm={modalProps.onConfirm}
+          msg={modalProps.msg}
+          btnInfo={modalProps.btnInfo}
+      />
   </SafeAreaView>
   );
 }
@@ -231,6 +267,10 @@ const styles = StyleSheet.create({
     justifyContent:"center", 
     alignItems:"center", 
     borderRadius:7
+  },
+
+  btnDisabled: {
+    backgroundColor:"#5dbaab55", 
   },
 
   //cancel btn

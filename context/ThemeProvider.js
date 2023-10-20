@@ -22,18 +22,6 @@ function ThemeProvider(props){
       reg: "1rem"
     },
 
-    container: {
-      flex: 1,
-      display:"flex",
-      justifyContent: 'space-evenly',
-      alignItems: 'center',
-      paddingHorizontal: 20,
-      height:"100%",
-    },
-
-    header:{
-      height:"200%",
-    }
   };
 
   return (

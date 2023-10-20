@@ -3,38 +3,38 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
 import { usePeople } from '../context/PeopleContext';
 import FAB from '../components/FAB';
-// import { FlatList } from 'react-native-gesture-handler';
 import GiftItemList from '../components/GiftItemList';
 
-
 export default function IdeaScreen({route, navigation}) {
-  const insets = useSafeAreaInsets();
+  // const insets = useSafeAreaInsets();
   const OS = Platform.OS;
   const { person, personId } = route.params   //being passed from PersonList
   // console.log(person, personId);
   const [people, savePerson, removePerson, getGifts, gifts] = usePeople(); //using context
 
-
   useEffect(()=>{
     getGifts(personId);
   })
 
+  //TODO: SAFEAREAVIEWS
+
+
   //conditionally render ios top-right header
-  useEffect(()=>{
-    if(OS === "ios"){
-      navigation.setOptions({
-        headerRight: () => (
-          <Button
-            title="Add Idea"
-            color="#fff"
-            onPress={() => navigation.navigate('AddIdeaScreen',{
-              personId: personId
-            })}
-          />
-        )
-      })
-    }
-  },[])
+  // useEffect(()=>{
+  //   if(OS === "ios"){
+  //     navigation.setOptions({
+  //       headerRight: () => (
+  //         <Button
+  //           title="Add Idea"
+  //           color="#fff"
+  //           onPress={() => navigation.navigate('AddIdeaScreen',{
+  //             personId: personId
+  //           })}
+  //         />
+  //       )
+  //     })
+  //   }
+  // },[])
 
 
   // find the person associated to the gifts via personId from route params
@@ -79,11 +79,9 @@ export default function IdeaScreen({route, navigation}) {
 }
 
 const styles = StyleSheet.create({
-
   heroContainer:{ 
     flex:1,
     width:"100%", 
-    backgroundColor:"#468b80", 
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
   },

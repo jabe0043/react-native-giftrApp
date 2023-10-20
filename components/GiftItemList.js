@@ -13,12 +13,15 @@ export default function GiftItemList({personId, data, navigation}){
   const [people, savePerson, removePerson, getGifts, gifts, saveGifts, removeGift] = usePeople(); //using context
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [imgModalVisible, setImgModalVisible] = useState(false);
+  const [modalProps, setModalProps] = useState({});
+  const [imgModalVisible, setImgModalVisible] = useState(false); //Displays the fullscreen image preview from clicking on thumbnail.
+
+
 
   // called from pressable that triggers the modal
-  const showModal = (modal) => {
-    modal === "del" ? setModalVisible(true) : setImgModalVisible(true)
-  };
+  // const showModal = (modal) => {
+  //   modal === "imgPreviewModal" ? setImgModalVisible(true) : setModalVisible(true);
+  // };
 
   // called from modal's pressable that hides the modal (ie: cancel)
   const hideModal = () => {
@@ -28,8 +31,27 @@ export default function GiftItemList({personId, data, navigation}){
 
   // called from modal's pressable that confirms the action (del, submit etc.)
   function handleConfirm(){
+    // removeGift(personId, giftId)
+    setModalVisible(true)
+    setModalProps({
+      visible: modalVisible, 
+      onClose: hideModal, 
+      onConfirm: remove,
+      msg:`Remove ${giftName} from your list of Gifts?`, 
+      btnInfo:{qty:2, text:"Remove", color:"#eb7474", text2:"Cancel"}})
+  }
+
+  const remove= () => {
     removeGift(personId, giftId)
-    setModalVisible(false);
+    .catch(() =>{
+      setModalProps({
+        visible: modalVisible, 
+        onConfirm: hideModal, 
+        msg:"Something went wrong. Gift idea could not be removed.",
+        btnInfo: {qty:1, text:"Return", color:"#eb7474"} ,
+      })
+      setModalVisible(true)
+    })
   }
 
 
@@ -37,7 +59,7 @@ export default function GiftItemList({personId, data, navigation}){
     <View style={{flex:1, width:"100%"}}>
       <View style={styles.cardContainer}>
         <View>
-          <Pressable onPress={()=>(showModal("img"))}>
+          <Pressable onPress={()=>(setImgModalVisible(true))}>
             <Image 
               source={{uri: img}} 
               style={{ width: 60, height: (60 * 3) / 2 , marginLeft:5, borderRadius:7}}
@@ -51,7 +73,7 @@ export default function GiftItemList({personId, data, navigation}){
 
         <View>
           <Pressable style={styles.btnPrimary}
-          onPress={()=>showModal("del")}
+            onPress={()=>handleConfirm()}
           >
             <View>
               <MaterialIcons name="delete" size={35} style={styles.icon} />
@@ -60,9 +82,23 @@ export default function GiftItemList({personId, data, navigation}){
         </View>
       </View>
 
-      <CustomModal visible={modalVisible} onClose={hideModal} onConfirm={handleConfirm} name={giftName} type={"gift"} />
       <ImagePreviewModal isVisible={imgModalVisible} onClose={hideModal} img={img} />
+      {/* <CustomModal visible={modalVisible} onClose={hideModal} onConfirm={handleConfirm} msg={`Delete ${giftName} from your list of gifts?`} /> */}
 
+      {/* <CustomModal 
+        visible={modalVisible}
+        onClose={hideModal}
+        onConfirm={handleConfirm} 
+        msg={`Delete ${giftName} from your list of gifts?`}        
+        btnInfo={{qty:2, text:"Remove", color:"#eb7474", text2:"Cancel"}} 
+      /> */}
+            <CustomModal 
+          visible= {modalVisible} 
+          onClose= {modalProps.onClose}
+          onConfirm={modalProps.onConfirm}
+          msg={modalProps.msg}
+          btnInfo={modalProps.btnInfo}
+      />
     </View>
   )
 }

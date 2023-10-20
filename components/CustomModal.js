@@ -3,22 +3,27 @@ import { Modal, View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { useState } from 'react';
 
 
-export default function CustomModal({ visible, onClose, onConfirm, name, type }){
+// export default function CustomModal({ visible, onClose, onConfirm, name, type }){
+export default function CustomModal({ visible, onClose, onConfirm, msg, btnInfo }){
 
 
   return (
     <Modal transparent visible={visible} onRequestClose={onClose} animationType="fade">
       <View style={styles.modalContainer}>
         <View style={styles.modalBox}>
-          <Image source={require('../assets/delete-stipple-illustrations.png')} style={styles.modalImg}/>
-          <Text>Delete {name} from your list of {type === "person" ? "people" : "gift ideas"}?</Text>
+          <Image source={require('../assets/warning-stipple-illustrations.png')} style={styles.modalImg}/>
+          <Text>{msg}</Text>
           <View style={styles.modalBtnContainer}>
+            {btnInfo && btnInfo.qty === 2 &&
             <Pressable onPress={onClose} style={styles.modalBtn}>
-              <Text>Cancel</Text>
+              <Text>{btnInfo.text2}</Text>
             </Pressable>
-            <Pressable onPress={onConfirm} style={[styles.modalBtn, styles.modalBtnPrimary]}>
-              <Text style={{color:"#fff"}}>Delete</Text>
+            }
+            {btnInfo && btnInfo.color &&
+            <Pressable onPress={onConfirm} style={[styles.modalBtn, styles.modalBtnPrimary, {backgroundColor:btnInfo.color}]}>
+              <Text style={{color:"#fff"}}>{btnInfo.text}</Text>
             </Pressable>
+            }
           </View>
         </View>
       </View>

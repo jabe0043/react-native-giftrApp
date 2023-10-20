@@ -1,5 +1,5 @@
 import { PeopleProvider } from './context/PeopleContext'
-import { Button, Platform } from 'react-native';
+import { Button, Platform, Pressable, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import PeopleScreen from './screens/PeopleScreen'
 import AddPersonScreen from './screens/AddPersonScreen'
 import IdeaScreen from './screens/IdeaScreen'
 import AddIdeaScreen from './screens/AddIdeaScreen'
+// import { ThemeProvider } from './context/ThemeProvider';
 
 /*TODO: 
 - Application's state context goes after the SafeAreaProvider
@@ -23,6 +24,7 @@ export default function App(route, navigation) {
 
   return (
     <PeopleProvider>
+      {/* <ThemeProvider> */}
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
             <NavigationContainer>
@@ -52,25 +54,38 @@ export default function App(route, navigation) {
                   name="AddPersonScreen" 
                   component={AddPersonScreen} 
                   options={({ navigation }) => ({
-                    title: "Add Giftee",
+                    title: "Add a Giftee",
                   })}
                 />
                 <Stack.Screen 
                   name="IdeaScreen" 
                   component={IdeaScreen} 
-                  options={({ navigation }) => ({
-                    title:"Gifts",
-                })}
-                />
+                options={({ navigation, route }) => ({
+                  title: "Gift Ideas",
+                  headerRight: () => (
+                      <Button
+                        title="Add Idea"
+                        color="#fff"
+                        onPress={() => {
+                            navigation.navigate("AddIdeaScreen", 
+                                route.params,
+                            );
+                        }}
+                      >
+                      </Button>
+                  )})}
+                  />
                 <Stack.Screen 
                   name="AddIdeaScreen" 
                   component={AddIdeaScreen} 
-                  options={{title:"Add Gift"}}
+                  options={{title:"Add an Idea"}}
+                  // options={{title:"Add Gift"}}
                 />
               </Stack.Navigator>
             </NavigationContainer>
         </SafeAreaProvider>
       </GestureHandlerRootView>
+      {/* </ThemeProvider> */}
     </PeopleProvider>
   );
 }

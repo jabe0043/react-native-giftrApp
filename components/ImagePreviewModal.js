@@ -17,7 +17,7 @@ export default function ImagePreviewModal({ isVisible, onClose, img }){
           <Image source={{uri: img}} style={styles.modalFullImg}/>
           <View >
             <Pressable onPress={onClose} style={styles.modalBtn}>
-              <Text>Back</Text>
+              <Text>Close</Text>
             </Pressable>
           </View>
         </View>

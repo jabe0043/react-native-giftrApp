@@ -10,7 +10,8 @@ import CustomModal from './CustomModal'
 
 export default function PersonList({data, navigation, remove, DateOffset}){
   const [modalVisible, setModalVisible] = useState(false);
-    
+  const [modalProps, setModalProps] = useState({});
+
   // called from pressable that triggers the modal
     const showModal = () => {
       setModalVisible(true);
@@ -20,10 +21,28 @@ export default function PersonList({data, navigation, remove, DateOffset}){
     const hideModal = () => {
       setModalVisible(false);
     };
-  
-    // called from modal's pressable that confirms the action (del, submit etc.)
-    function handleConfirm(){
-      remove(data)
+
+    //handle delete person confirmation 
+    function handleConfirm(){  
+      showModal();
+      setModalProps({
+        visible: modalVisible, 
+        onClose: hideModal, 
+        onConfirm: removePerson,
+        msg:`Remove ${data.name} from your list of people?`, 
+        btnInfo:{qty:2, text:"Remove", color:"#eb7474", text2:"Cancel"}})
+    }
+
+    const removePerson = () => {
+      remove(data)  //The reference to removePerson in context. Passed from PeopleScreen
+      .catch(() =>{
+      setModalProps({
+        visible: modalVisible, 
+        onConfirm: hideModal, 
+        msg:"Something went wrong. User could not be removed.",
+        btnInfo: {qty:1, text:"Return", color:"#eb7474"} ,
+      }),
+      showModal()})
     }
 
   function formatDate(date){
@@ -35,12 +54,13 @@ export default function PersonList({data, navigation, remove, DateOffset}){
     return dateString
   }
 
+
   //right-side swipeable component (renders delete button)
   const renderRightActions = (progress, dragX) => {
     return (
       <View style={styles.deleteSwipeBtn}>
         <Pressable 
-          onPress={showModal}>
+          onPress= {handleConfirm}>
           <View>
             <MaterialIcons name="delete" size={35} color="#fff" />
           </View>
@@ -83,15 +103,21 @@ return (
           </Pressable>
       </View>
 
-      <CustomModal visible={modalVisible} onClose={hideModal} onConfirm={handleConfirm} name={data.name} type={"person"} />
-    
+      <CustomModal 
+          visible= {modalVisible} 
+          onClose= {modalProps.onClose}
+          onConfirm={modalProps.onConfirm}
+          msg={modalProps.msg}
+          btnInfo={modalProps.btnInfo}
+      />
+
     </View>
   </Swipeable>
-)
-}
+)}
+
+
 
 const styles = StyleSheet.create({
-
   cardContainer:{
     flex:1, 
     height:100, 
