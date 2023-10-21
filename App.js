@@ -1,5 +1,6 @@
 import { PeopleProvider } from './context/PeopleContext'
-import { Button, Platform, Pressable, Text, View } from 'react-native';
+import { ThemeProvider } from './context/ThemeProvider';
+import { Button, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -8,23 +9,17 @@ import PeopleScreen from './screens/PeopleScreen'
 import AddPersonScreen from './screens/AddPersonScreen'
 import IdeaScreen from './screens/IdeaScreen'
 import AddIdeaScreen from './screens/AddIdeaScreen'
-// import { ThemeProvider } from './context/ThemeProvider';
 
-/*TODO: 
-- Application's state context goes after the SafeAreaProvider
-- State manager
-- conditional render for ios header "add" link vs android FAB btn. may need to make a header componenet rather than using the stack.screen header prop. 
-*/
+
 
 const Stack = createNativeStackNavigator();
 
-export default function App(route, navigation) {
+export default function App() {
   const OS = Platform.OS;
-  console.log(OS);
 
   return (
     <PeopleProvider>
-      {/* <ThemeProvider> */}
+      <ThemeProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <SafeAreaProvider>
             <NavigationContainer>
@@ -60,32 +55,32 @@ export default function App(route, navigation) {
                 <Stack.Screen 
                   name="IdeaScreen" 
                   component={IdeaScreen} 
-                options={({ navigation, route }) => ({
-                  title: "Gift Ideas",
-                  headerRight: () => (
-                      <Button
-                        title="Add Idea"
-                        color="#fff"
-                        onPress={() => {
-                            navigation.navigate("AddIdeaScreen", 
-                                route.params,
-                            );
-                        }}
-                      >
-                      </Button>
+                  options={({ navigation, route }) => ({
+                    title: "Gift Ideas",
+                    headerRight: () => (
+                      OS === "ios" && 
+                        <Button
+                          title="Add Idea"
+                          color="#fff"
+                          onPress={() => {
+                              navigation.navigate("AddIdeaScreen", 
+                                  route.params,
+                              );
+                          }}
+                        >
+                        </Button>
                   )})}
                   />
                 <Stack.Screen 
                   name="AddIdeaScreen" 
                   component={AddIdeaScreen} 
                   options={{title:"Add an Idea"}}
-                  // options={{title:"Add Gift"}}
                 />
               </Stack.Navigator>
             </NavigationContainer>
         </SafeAreaProvider>
       </GestureHandlerRootView>
-      {/* </ThemeProvider> */}
+      </ThemeProvider>
     </PeopleProvider>
   );
 }

@@ -1,20 +1,16 @@
-import { View, Text, Image, FlatList, StyleSheet, ImageBackground} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View, Text, FlatList, ImageBackground, SafeAreaView} from 'react-native';
 import { usePeople } from '../context/PeopleContext';
-// import { correctDateStrOffset } from '../utils/utils';
 import PersonList from '../components/PersonList';
 import FAB from '../components/FAB';
+import { useTheme } from '../context/ThemeProvider';
 
-
-//TODO: add validation
 
 export default function PeopleScreen({navigation, route}) {
-  const insets = useSafeAreaInsets();
-  const [people, savePerson, removePerson, getGifts] = usePeople([]);
+  const [people, ,removePerson] = usePeople([]);
+  const theme = useTheme();
 
 
-
-// convert yyyy-mm-dd string to a date object while accounting for timezone
+// convert yyyy-mm-dd string to a date object while accounting for user timezone offset
   function correctDateStrOffset(dateStr){
     let hourOffset = new Date(dateStr).getTimezoneOffset() / 60;    
     let hour = hourOffset >= 0 ? Math.ceil(hourOffset) : 24 - Math.ceil(hourOffset);
@@ -22,7 +18,6 @@ export default function PeopleScreen({navigation, route}) {
     let dateObj = new Date(dateTimeString);
     return dateObj
   }
-
 
   function sortDates(peopleArr){
     peopleArr.sort((a,b)=>{
@@ -41,25 +36,21 @@ export default function PeopleScreen({navigation, route}) {
   }
 
 
-
-
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={styles.heroContainer}>
-          <ImageBackground source={require('../assets/fun.png')} resizeMode="contain" style={styles.image}>
-            <View style={styles.headerOverlay}>
-              <Text style={styles.heroTitle} >Welcome to {'\n'}Gift'r</Text>
+    <SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <View style={theme.heroContainer}>
+          <ImageBackground source={require('../assets/fun.png')} resizeMode="contain" style={theme.bgImage}>
+            <View style={theme.headerOverlay}>
+              <Text style={theme.heroTitle} >Welcome to {'\n'}Gift'r</Text>
             </View>
           </ImageBackground>
         </View>
 
       {people.length === 0 && 
         <View style={{ flex: .25, display:"flex", alignItems:"center", marginTop:40 }}>
-          <Image 
-            source={require("../assets/woman.png")} 
-            style={{width:250, height:250}}
-          />
-          <Text>Add friends and family to your list of giftees!</Text>
+          <Text style={{color:theme.colors.gray, fontSize: theme.types.text}}>
+            Add friends and family to your list of giftees!
+          </Text>
         </View>
       }
 
@@ -72,46 +63,7 @@ export default function PeopleScreen({navigation, route}) {
       </View>
 
       <FAB navigation={navigation} page={"AddPersonScreen"}/>
-    </View>
+    </SafeAreaView>
     
   );
 }
-
-
-const styles = StyleSheet.create({
-
-  heroContainer:{ 
-    flex:.5,
-    width:"100%", 
-    backgroundColor:"#468b80", 
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20,
-  },
-
-  image: {
-    flex: 1,
-    backgroundColor:"#5dbaab", 
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20,
-  },
-
-  headerOverlay:{
-    width:"100%", 
-    height:"100%", 
-    display:"flex", 
-    justifyContent:"center",
-    backgroundColor: '#00000040',
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20
-  },
-
-  heroTitle: {
-    color: 'white',
-    fontSize: 42,
-    lineHeight: 40,
-    fontWeight: 'bold',
-    paddingLeft: 20,
-    paddingTop: 50
-  },
-  
-});

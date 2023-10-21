@@ -1,11 +1,8 @@
 
 import { Modal, View, Text, Pressable, Image, StyleSheet } from 'react-native';
-import { useState } from 'react';
 
 
-// export default function CustomModal({ visible, onClose, onConfirm, name, type }){
 export default function CustomModal({ visible, onClose, onConfirm, msg, btnInfo }){
-
 
   return (
     <Modal transparent visible={visible} onRequestClose={onClose} animationType="fade">
@@ -33,7 +30,6 @@ export default function CustomModal({ visible, onClose, onConfirm, msg, btnInfo 
 
 
 const styles = StyleSheet.create({
-
   modalContainer:{
     backgroundColor:"#0000005f",
     flex: 1, 
@@ -70,7 +66,5 @@ const styles = StyleSheet.create({
     backgroundColor:"#eb7474",
     borderRadius:7,
   }
-
-
 })
 

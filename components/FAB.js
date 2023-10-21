@@ -7,7 +7,7 @@ export default function FAB ({person, navigation, personId, page}){
 
   return (
     OS === "android" &&
-      <Pressable style={styles.container}
+      <Pressable style={styles.containerFAB}
           onPress={()=>{
             if(page === "AddIdeaScreen"){
               navigation.navigate("AddIdeaScreen", {
@@ -23,7 +23,7 @@ export default function FAB ({person, navigation, personId, page}){
 };
 
 const styles = StyleSheet.create({
-  container: {
+  containerFAB: {
       justifyContent: 'center',
       alignItems: 'center',
       paddingHorizontal: 20,

@@ -1,14 +1,12 @@
 import { Modal, View, Text, Pressable, Image, StyleSheet } from 'react-native';
-import { useState } from 'react';
 
 
 export default function ImagePreviewModal({ isVisible, onClose, img }){
-  // console.log(img)
 
   return (
     <Modal
       visible={isVisible}  
-      transparent = {true}
+      transparent={true}
       onRequestClose={onClose} 
       animationType="fade" 
     >

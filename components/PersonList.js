@@ -1,37 +1,32 @@
-import { StyleSheet, View, Text, Image, Pressable, TouchableHighlight } from 'react-native';
-// import { correctDateStrOffset } from '../utils/utils';
+import { StyleSheet, View, Text, Pressable } from 'react-native';
 import { useState } from 'react';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'; 
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import CustomModal from './CustomModal'
 
 
-
-
 export default function PersonList({data, navigation, remove, DateOffset}){
   const [modalVisible, setModalVisible] = useState(false);
   const [modalProps, setModalProps] = useState({});
 
-  // called from pressable that triggers the modal
-    const showModal = () => {
-      setModalVisible(true);
-    };
-  
-    // called from modal's pressable that hides the modal (ie: cancel)
-    const hideModal = () => {
-      setModalVisible(false);
-    };
+  const showModal = () => {
+    setModalVisible(true);
+  };
 
-    //handle delete person confirmation 
-    function handleConfirm(){  
-      showModal();
-      setModalProps({
-        visible: modalVisible, 
-        onClose: hideModal, 
-        onConfirm: removePerson,
-        msg:`Remove ${data.name} from your list of people?`, 
-        btnInfo:{qty:2, text:"Remove", color:"#eb7474", text2:"Cancel"}})
-    }
+  const hideModal = () => {
+    setModalVisible(false);
+  };
+
+  //handle delete person confirmation 
+  function handleConfirm(){  
+    showModal();
+    setModalProps({
+      visible: modalVisible, 
+      onClose: hideModal, 
+      onConfirm: removePerson,
+      msg:`Remove ${data.name} from your list of people?`, 
+      btnInfo:{qty:2, text:"Remove", color:"#eb7474", text2:"Cancel"}})
+  }
 
     const removePerson = () => {
       remove(data)  //The reference to removePerson in context. Passed from PeopleScreen
@@ -54,8 +49,7 @@ export default function PersonList({data, navigation, remove, DateOffset}){
     return dateString
   }
 
-
-  //right-side swipeable component (renders delete button)
+  //right-side swipeable component
   const renderRightActions = (progress, dragX) => {
     return (
       <View style={styles.deleteSwipeBtn}>
@@ -91,7 +85,7 @@ return (
       </View>
 
       <View>
-          <Pressable style={styles.btnPrimary} 
+          <Pressable style={styles.giftBtn} 
             onPress={()=> {
               navigation.navigate( "IdeaScreen", { 
                 person: data, 
@@ -110,11 +104,9 @@ return (
           msg={modalProps.msg}
           btnInfo={modalProps.btnInfo}
       />
-
     </View>
   </Swipeable>
 )}
-
 
 
 const styles = StyleSheet.create({
@@ -150,24 +142,22 @@ const styles = StyleSheet.create({
 
   initials: {
     color:"#fff",
-    // fontSize: "20",
     fontWeight:"500"
   },
 
   title:{
     color: "#212427",
-    // fontSize: "17",
     fontWeight:"500",
-    paddingBottom:5
+    paddingBottom:5,
+    fontSize: 16
   },
 
   subTitle:{
     color: "#808080",
   },
 
-  btnPrimary:{
+  giftBtn:{
     backgroundColor:'#5dbaab88',
-    // backgroundColor:'#5dbaab',
     marginRight: 10,
     padding: 10,
     borderRadius:7,
@@ -189,5 +179,4 @@ const styles = StyleSheet.create({
     width:90,
     borderRadius: 7,
   }
-  
 });

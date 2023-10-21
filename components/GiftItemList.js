@@ -10,28 +10,19 @@ import ImagePreviewModal from './ImagePreviewModal';
 
 export default function GiftItemList({personId, data, navigation}){
   const { giftName, height, width, img, giftId } = data
-  const [people, savePerson, removePerson, getGifts, gifts, saveGifts, removeGift] = usePeople(); //using context
+  const [, , , , , , removeGift] = usePeople(); //using context
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalProps, setModalProps] = useState({});
   const [imgModalVisible, setImgModalVisible] = useState(false); //Displays the fullscreen image preview from clicking on thumbnail.
 
 
-
-  // called from pressable that triggers the modal
-  // const showModal = (modal) => {
-  //   modal === "imgPreviewModal" ? setImgModalVisible(true) : setModalVisible(true);
-  // };
-
-  // called from modal's pressable that hides the modal (ie: cancel)
   const hideModal = () => {
     setModalVisible(false);
     setImgModalVisible(false);
   };
 
-  // called from modal's pressable that confirms the action (del, submit etc.)
   function handleConfirm(){
-    // removeGift(personId, giftId)
     setModalVisible(true)
     setModalProps({
       visible: modalVisible, 
@@ -72,7 +63,7 @@ export default function GiftItemList({personId, data, navigation}){
         </View>
 
         <View>
-          <Pressable style={styles.btnPrimary}
+          <Pressable style={styles.delBtn}
             onPress={()=>handleConfirm()}
           >
             <View>
@@ -83,21 +74,13 @@ export default function GiftItemList({personId, data, navigation}){
       </View>
 
       <ImagePreviewModal isVisible={imgModalVisible} onClose={hideModal} img={img} />
-      {/* <CustomModal visible={modalVisible} onClose={hideModal} onConfirm={handleConfirm} msg={`Delete ${giftName} from your list of gifts?`} /> */}
-
-      {/* <CustomModal 
-        visible={modalVisible}
-        onClose={hideModal}
-        onConfirm={handleConfirm} 
-        msg={`Delete ${giftName} from your list of gifts?`}        
-        btnInfo={{qty:2, text:"Remove", color:"#eb7474", text2:"Cancel"}} 
-      /> */}
-            <CustomModal 
-          visible= {modalVisible} 
-          onClose= {modalProps.onClose}
-          onConfirm={modalProps.onConfirm}
-          msg={modalProps.msg}
-          btnInfo={modalProps.btnInfo}
+      
+      <CustomModal 
+        visible= {modalVisible} 
+        onClose= {modalProps.onClose}
+        onConfirm={modalProps.onConfirm}
+        msg={modalProps.msg}
+        btnInfo={modalProps.btnInfo}
       />
     </View>
   )
@@ -131,7 +114,7 @@ icon:{
   padding:0,
 },
 
-btnPrimary:{
+delBtn:{
   backgroundColor:"#eb747488",
   marginRight: 10,
   padding: 10,

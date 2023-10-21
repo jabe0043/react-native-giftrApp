@@ -1,22 +1,21 @@
 import { View, Text, TextInput, StyleSheet, Pressable, KeyboardAvoidingView, SafeAreaView, Modal, ImageBackground } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useState } from 'react';
 import DatePicker from 'react-native-modern-datepicker';
 import { usePeople } from '../context/PeopleContext';
+import { useTheme } from '../context/ThemeProvider';
 import * as Crypto from 'expo-crypto';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import CustomModal from '../components/CustomModal';
 
 
 export default function AddPersonScreen({navigation, route}) {
-  const insets = useSafeAreaInsets(); //TODO:
+  const [people, savePerson] = usePeople() 
+  const theme = useTheme();
   const [dob, setDob] = useState("");
   const [name, setName] = useState("");
-  const [people, savePerson] = usePeople() //importing the savePerson function from context provider. 
   const [visibleDateModal, setVisibleDateModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalProps, setModalProps] = useState({}) //modal props state because it's being used by two separate functions on this page.
-
+  const [modalProps, setModalProps] = useState({}) 
 
   function avatarBg(){
     const colorArr = ["#fac273", "#83a3d3", "#eb7474", "#5dbaab","#625583" ]
@@ -24,8 +23,6 @@ export default function AddPersonScreen({navigation, route}) {
     return colorArr[bgColor]
   }
   let bgColor = avatarBg();
-
-
 
   const showModal = () => {
     setModalVisible(true);
@@ -36,52 +33,44 @@ export default function AddPersonScreen({navigation, route}) {
   }
 
   function createPerson(name, dob){
-    if( name === "" || dob === "" ){
+    const personModel = {
+      id: Crypto.randomUUID(),
+      initials: name.trim().split(" ").map(word => word.slice(0, 1).toUpperCase()).join(" "),
+      bgColor: bgColor ? bgColor : "#fac273",
+      name: name,
+      dob: dob,    
+      ideas:[]
+    }
+    savePerson(personModel)   
+    .then(() => navigation.navigate("PeopleScreen"))
+    .catch(() =>{
       setModalProps({
         visible: modalVisible, 
         onConfirm: handleConfirm, 
-        msg:"Name and Date of Birth are required.",
-        btnInfo: {qty:1, text:" Ok ", color:"#5dbaab"} ,
-      })
-      showModal(); 
-    } else {
-      const personModel = {
-        id: Crypto.randomUUID(),
-        initials: name.trim().split(" ").map(word => word.slice(0, 1).toUpperCase()).join(" "),
-        bgColor: bgColor ? bgColor : "#fac273",
-        name: name,
-        dob: dob,    
-        ideas:[]
-      }
-      savePerson(personModel)   //saving through context.
-      .then(() => navigation.navigate("PeopleScreen"))
-      .catch(() =>{
-        setModalProps({
-          visible: modalVisible, 
-          onConfirm: handleConfirm, 
-          msg:"Something went wrong. User could not be saved.",
-          btnInfo: {qty:1, text:"Return", color:"#5dbaab"} ,
-        }),
-        showModal()});
-      }
+        msg:"Something went wrong. User could not be saved.",
+        btnInfo: {qty:1, text:"Return", color:"#5dbaab"} ,
+      }),
+      showModal()});
     }
-  
-
 
   return (
   <SafeAreaView style={{ flex: 1 }}>
-    <ImageBackground source={require('../assets/relationship-heart-stipple-illustrations.png')} resizeMode="cover" style={styles.image}>
-      <View style={styles.headerOverlay}>
-        <Text style={styles.heroTitle}>Add a New {'\n'}Giftee</Text>
+    <ImageBackground source={require('../assets/relationship-heart-stipple-illustrations.png')} resizeMode="cover" style={theme.bgImage}>
+      <View style={theme.headerOverlay}>
+        <Text style={theme.heroTitle}>
+          Add a New {'\n'}Giftee
+        </Text>
       </View>
     </ImageBackground>
 
     <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
       <View style={styles.formContainer}>
         <View style={styles.nameInputFlex}>
-          <View style={styles.testFormInputContainer}>
-            <View style={styles.testName}>
-              <Text>Name</Text>
+          <View style={styles.formInputContainer}>
+            <View style={styles.nameContainer}>
+              <Text style={{color:theme.colors.gray, fontSize:theme.types.smtext}}>
+                Name
+              </Text>
               <TextInput style={styles.nameInput}
                 placeholder='Full Name'
                 onChangeText={setName}
@@ -92,9 +81,11 @@ export default function AddPersonScreen({navigation, route}) {
               />
             </View>
 
-            <View style={styles.testDob}>
-              <Text>Date of Birth</Text>
-              <TextInput style={styles.testDobInput}
+            <View style={styles.dobContainer}>
+              <Text style={{color:theme.colors.gray, fontSize:theme.types.smtext}}>
+                Date of Birth
+              </Text>
+              <TextInput style={styles.dobInput}
                 placeholder='yyyy-mm-dd'
                 onChangeText={setDob}
                 value={dob}
@@ -112,19 +103,19 @@ export default function AddPersonScreen({navigation, route}) {
     </KeyboardAvoidingView>
 
 
-    <View style={styles.btnContainer}>
-      <Pressable style={[styles.btn, styles.btnSecondary]}
+    <View style={theme.btnContainer}>
+      <Pressable style={[theme.btn, theme.btnSecondary]}
         onPress={()=> navigation.navigate("PeopleScreen")}
         >
-        <Text style={styles.btnTextStyle}> Cancel </Text>
+        <Text style={theme.btnTextStyle}> Cancel </Text>
       </Pressable>
 
       <Pressable 
         disabled={(name === "" || dob === "") ? true : false}
-        style={[styles.btn, (name === "" || dob === "") ? styles.btnDisabled : null]}
+        style={[theme.btn, (name === "" || dob === "") ? theme.btnDisabled : null]}
         onPress={()=> createPerson(name, dob)}
         >
-        <Text style={styles.btnTextStyle}> Save </Text>
+        <Text style={theme.btnTextStyle}> Save </Text>
       </Pressable>
     </View>
 
@@ -139,12 +130,13 @@ export default function AddPersonScreen({navigation, route}) {
             style={{borderTopLeftRadius:20, borderTopRightRadius:20}}
             mode="calendar"
             current={'2000-01-01'}
+            selected="2000-01-01"
             options={styles.datePicker}
           /> 
           <View style={styles.modalBtnContainer}>
             <Pressable style={styles.modalButton}
               onPress={() => setVisibleDateModal(!visibleDateModal)}>
-              <Text style={styles.btnTextStyle}>Return</Text>
+              <Text style={theme.btnTextStyle}>Return</Text>
             </Pressable>
           </View>
         </View>
@@ -190,7 +182,6 @@ const styles = StyleSheet.create({
     paddingLeft:10,
   },
 
-  //****TEST
   nameInputFlex:{
     display:"flex",
     width:"100%",
@@ -198,8 +189,8 @@ const styles = StyleSheet.create({
     justifyContent:"flex-start",
   },
 
-    testFormInputContainer:{
-      flex:1,
+    formInputContainer:{
+    flex:1,
     width:"100%",
     display:"flex",
     flexDirection:"row",
@@ -207,12 +198,14 @@ const styles = StyleSheet.create({
     marginBottom:20
   },
 
-  testName:{
+  nameContainer:{
     width:"65%",
+    gap:5,
   },
 
-  testDob:{
+  dobContainer:{
     width:"33%",
+    gap:5
   },
 
   nameInput: {
@@ -225,7 +218,7 @@ const styles = StyleSheet.create({
     paddingLeft:10,
   },
 
-  testDobInput:{
+  dobInput:{
     height: 50,
     width: "100%",
     borderWidth: 1,
@@ -244,48 +237,6 @@ const styles = StyleSheet.create({
       backgroundColor:"#fac273",
       borderRadius: 7,
     },
-
-  //** END TEST */
-
-  // save and del btn container
-  btnContainer:{
-    alignSelf:"center",
-    width:"95%",
-    paddingBottom:20,
-    flexDirection:'row',
-    justifyContent:"space-between",
-    alignItems:"center",
-    // backgroundColor:"red",
-  },  
-
-  //save btn (primary btn)
-  btn:{
-    height:50, 
-    width:"49%", 
-    backgroundColor:"#5dbaab", 
-    display:"flex", 
-    justifyContent:"center", 
-    alignItems:"center", 
-    borderRadius:7
-  },
-
-  btnDisabled: {
-    backgroundColor:"#5dbaab55", 
-  },
-
-  //cancel btn
-  btnSecondary:{
-    backgroundColor:"#eb7474"
-  },
-
-  dobInput:{
-    height: 45,
-    width: 250,
-    borderWidth: 1,
-    borderRadius:5,
-    backgroundColor:"#fff",
-  },
-
 
   datePicker:{
     backgroundColor: '#fff',
@@ -311,12 +262,6 @@ const styles = StyleSheet.create({
     backgroundColor:'#5dbaab',
   },
 
-  btnTextStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-
   modalBtnContainer:{
     display:"flex", 
     flexDirection:"row", 
@@ -328,30 +273,4 @@ const styles = StyleSheet.create({
     borderBottomRightRadius:20, 
     borderBottomLeftRadius:20
   },
-
-/******* */
-  image: {
-    flex: 1,
-    backgroundColor:"#5dbaab", 
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20,
-  },
-  heroTitle: {
-    color: 'white',
-    fontSize: 42,
-    lineHeight: 40,
-    fontWeight: 'bold',
-    paddingLeft: 20,
-    paddingTop: 50
-  },
-
-  headerOverlay:{
-    width:"100%", 
-    height:"100%", 
-    display:"flex", 
-    justifyContent:"center",
-    backgroundColor: '#00000040',
-    borderBottomRightRadius: 20,
-    borderBottomLeftRadius: 20
-  }
 });
